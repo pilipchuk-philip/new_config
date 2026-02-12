@@ -20,7 +20,7 @@
       rg = "rg -S --hidden";
       gc = "git branch --sort=committerdate | fzf --header 'Checkout Recent Branch' --preview 'git diff {0} --color=always' --pointer='=>' | xargs git checkout";
     };
-    initExtra = ''
+    initContent = ''
       export POWERLEVEL9K_CONFIG_FILE=/etc/nixos/p10k.zsh
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
       source /etc/nixos/p10k.zsh
@@ -54,6 +54,12 @@
     vkbasalt           # optional: post-processing
     ghostty
     vulkan-tools
+    pkgs.zip
+    pkgs.unrar
+    pkgs.kdiff3
+    pkgs.thunderbird
+    pkgs.krename
+    pkgs.krusader
     pkgs.signal-desktop
     pkgs.telegram-desktop
     pkgs.signal-desktop
