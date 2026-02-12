@@ -54,10 +54,12 @@
     vkbasalt           # optional: post-processing
     ghostty
     vulkan-tools
+    pkgs.jetbrains.pycharm
+    pkgs.kdePackages.francis
     pkgs.zip
     pkgs.unrar
     pkgs.kdiff3
-    pkgs.thunderbird
+    pkgs.thunderbird-bin
     pkgs.krename
     pkgs.krusader
     pkgs.signal-desktop
