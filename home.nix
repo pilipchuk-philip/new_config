@@ -19,6 +19,7 @@
       lg = "lazygit";
       rg = "rg -S --hidden";
       gc = "git branch --sort=committerdate | fzf --header 'Checkout Recent Branch' --preview 'git diff {0} --color=always' --pointer='=>' | xargs git checkout";
+      fd = "fd --hiden --color always -i ";
     };
     initContent = ''
       export POWERLEVEL9K_CONFIG_FILE=/etc/nixos/p10k.zsh
@@ -54,6 +55,7 @@
     vkbasalt           # optional: post-processing
     ghostty
     vulkan-tools
+    pkgs.mullvad-vpn
     pkgs.jetbrains.pycharm
     pkgs.kdePackages.francis
     pkgs.zip
