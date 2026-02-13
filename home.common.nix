@@ -34,6 +34,10 @@
   programs.git = {
     enable = true;
     settings = {
+      user = {
+        name = "pilipchuk-philip";
+        email = "pilipchuk.philip@gmail.com";
+      };
       alias = {
         lg = "log --oneline --graph --decorate";
         gs = "status";
