@@ -8,7 +8,27 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  programs.zsh.enable = true;
+  security.pam.services.sudo_local.touchIdAuth = true;
+
+  system.primaryUser = "q";
+
+  system.defaults = {
+    NSGlobalDomain = {
+      ApplePressAndHoldEnabled = false;
+      InitialKeyRepeat = 15;
+      KeyRepeat = 2;
+    };
+  };
+
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+  };
+
+  fonts.packages = with pkgs; [
+    jetbrains-mono
+    nerd-fonts.jetbrains-mono
+  ];
 
   users.users.q = {
     home = "/Users/q";

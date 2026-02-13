@@ -1,87 +1,86 @@
 # Nix Config (Linux + macOS)
 
-Репозиторий с единой `flake`-конфигурацией для:
+This repository contains a single `flake` configuration for:
 
 1. NixOS (`nixosConfigurations.nixos`)
-2. macOS через nix-darwin (`darwinConfigurations.mac`)
+2. macOS via nix-darwin (`darwinConfigurations.mac`)
 
-Home Manager уже встроен в оба варианта, отдельная установка HM не нужна.
+Home Manager is already integrated for both targets, so no separate HM setup is required.
 
-## Структура
+## Structure
 
-1. `flake.nix` - входная точка и сборка конфигураций
-2. `configuration.nix` - системный конфиг NixOS
-3. `darwin.nix` - системный конфиг macOS (nix-darwin)
-4. `home.common.nix` - общие user-пакеты и shell-настройки
-5. `home.nix` - Linux-специфичные user-настройки
-6. `home.darwin.nix` - macOS-специфичные user-настройки
-7. `nixvim.nix` - конфиг Neovim через nixvim
+1. `flake.nix` - entry point and system definitions
+2. `configuration.nix` - NixOS system configuration
+3. `darwin.nix` - macOS system configuration (nix-darwin)
+4. `home.common.nix` - shared user packages and shell config
+5. `home.nix` - Linux-specific user config
+6. `home.darwin.nix` - macOS-specific user config
+7. `nixvim.nix` - Neovim configuration via nixvim
 
-## Установка на Linux (NixOS)
+## Linux Installation (NixOS)
 
-### 1) Подготовка
+### 1) Preparation
 
-1. Установить NixOS обычным способом (графический/минимальный инсталлер).
-2. Войти в установленную систему.
-3. Установить `git`, если его нет:
+1. Install NixOS (graphical or minimal installer).
+2. Log into the installed system.
+3. Install `git` if needed:
 
 ```bash
 nix-shell -p git
-
 ```
 
-4. Клонировать репозиторий и перейти в него:
+4. Clone this repository and enter it:
 
 ```bash
-git clone <URL_РЕПО> ~/new_config
+git clone <REPO_URL> ~/new_config
 cd ~/new_config
 ```
 
-### 2) Применение системы
+### 2) Apply the system configuration
 
 ```bash
 sudo nixos-rebuild switch --flake .#nixos
 ```
 
-## Установка на macOS (nix-darwin)
+## macOS Installation (nix-darwin)
 
-### 1) Подготовка
+### 1) Preparation
 
-1. Установить Nix (рекомендуется Determinate Nix Installer или официальный установщик).
-2. Клонировать репозиторий:
+1. Install Nix (Determinate Nix Installer or the official installer).
+2. Clone this repository:
 
 ```bash
-git clone <URL_РЕПО> ~/new_config
+git clone <REPO_URL> ~/new_config
 cd ~/new_config
 ```
 
-### 2) Bootstrap nix-darwin и первое применение
+### 2) Bootstrap nix-darwin and apply for the first time
 
 ```bash
 nix run nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake .#mac
 ```
 
-### 3) Дальнейшее применение изменений
+### 3) Apply further changes
 
 ```bash
 darwin-rebuild switch --flake .#mac
 ```
 
-## Обновление и проверка
+## Update and Validation
 
-1. Обновить lock-файл:
+1. Update the lock file:
 
 ```bash
 nix flake update
 ```
 
-2. Проверить флейк (без сборки):
+2. Validate the flake (without building):
 
 ```bash
 nix flake check --no-build
 ```
 
-3. Применить изменения:
+3. Apply changes:
 
 ```bash
 # Linux
