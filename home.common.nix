@@ -21,9 +21,10 @@
       lg = "lazygit";
       rg = "rg -S --hidden";
       gc = "git branch --sort=committerdate | fzf --header 'Checkout Recent Branch' --preview 'git diff {0} --color=always' --pointer='=>' | xargs git checkout";
-      fd = "fd --hiden --color always -i ";
+      fd = "fd --hidden --color always -i ";
     };
     initContent = ''
+      export PATH="$(npm config get prefix)/bin:$PATH"
       export POWERLEVEL9K_CONFIG_FILE=${config.xdg.configHome}/p10k.zsh
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
       source ${config.xdg.configHome}/p10k.zsh

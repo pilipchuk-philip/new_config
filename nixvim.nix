@@ -763,11 +763,7 @@ in
         keymap("v", "", "<Plug>kommentary_visual_default<CR>")
       end
 
-      keymap("n", "gD", ":lua vim.lsp.buf.declaration()<CR>", { silent = true })
-      keymap("n", "gd", ":lua vim.lsp.buf.definition()<CR>", { silent = true })
       keymap("n", "gs", ":vsplit | lua vim.lsp.buf.definition()<CR>", { silent = true })
-      keymap("n", "gr", ":lua require('telescope.builtin').lsp_references()<CR>", { silent = true })
-      keymap("n", "<C-f>", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
       keymap({ "n", "v" }, "<leader>ca", ":lua require('actions-preview').code_actions()<CR>")
       keymap({ "n", "v" }, "<leader>gl", ":lua require('custom.github-helper').main()<CR>")
       keymap("n", "<leader>b", ":lua require('custom.bookmarks-picker').open()<CR>", { silent = true })
@@ -829,11 +825,6 @@ in
           return
         end
         local merged = vim.tbl_deep_extend("force", { capabilities = capabilities }, cfg)
-        if not merged.root_dir then
-          merged.root_dir = function(fname)
-            return vim.fs.dirname(fname)
-          end
-        end
         pcall(server_cfg.setup, merged)
       end
 
