@@ -3,22 +3,26 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixvim.url = "github:nix-community/nixvim/nixos-25.11";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
 
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    darwin.url = "github:LnL7/nix-darwin/nix-darwin-25.11";
+    darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixvim, home-manager, ... }:
+  outputs = { self, nixpkgs, nixpkgs-darwin, nixpkgs-unstable, nixvim, home-manager, darwin, ... }:
   let
-    system = "x86_64-linux";
-    pkgs-unstable = import nixpkgs-unstable { inherit system; };
+    linuxSystem = "x86_64-linux";
+    darwinSystem = "aarch64-darwin";
+    pkgs-unstable = import nixpkgs-unstable { system = linuxSystem; };
   in
   {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      inherit system;
+      system = linuxSystem;
 
       modules = [
         ./configuration.nix
@@ -37,6 +41,25 @@
 	  home-manager.backupFileExtension = "bak";
           home-manager.sharedModules = [ nixvim.homeModules.nixvim ];
           home-manager.users.q = import ./home.nix;
+        }
+      ];
+    };
+
+    darwinConfigurations.mac = darwin.lib.darwinSystem {
+      system = darwinSystem;
+      pkgs = import nixpkgs-darwin {
+        system = darwinSystem;
+        config.allowUnfree = true;
+      };
+      modules = [
+        ./darwin.nix
+        home-manager.darwinModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.backupFileExtension = "bak";
+          home-manager.sharedModules = [ nixvim.homeModules.nixvim ];
+          home-manager.users.q = import ./home.darwin.nix;
         }
       ];
     };
