@@ -1,0 +1,15 @@
+#!/bin/sh
+echo "#########################################################################"
+echo "#   System Packages"
+sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
+
+
+echo "#########################################################################"
+echo "#   Home Manager Packages"
+nix-env --list-generations
+nix-env --delete-generations +5
+
+
+echo "#########################################################################"
+echo "#   Garbage collection"
+sudo nix-collect-garbage

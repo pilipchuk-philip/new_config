@@ -1,0 +1,9 @@
+#!/bin/sh
+echo "#########################################################################"
+echo "#   Nix Update "
+cd /etc/nixos/
+nix flake update
+sudo nixos-rebuild switch --flake .
+echo "#########################################################################"
+echo "#   Nix Update Complete"
+cd /home/$USER

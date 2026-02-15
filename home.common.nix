@@ -47,6 +47,7 @@
 
   # Набор базовых утилит, которые почти всегда нужны в nvim-воркфлоу
   home.packages = with pkgs; [
+    cifs-utils
     git
     ripgrep
     fd
