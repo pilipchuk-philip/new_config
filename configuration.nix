@@ -5,7 +5,16 @@
     ./hardware-configuration.nix
   ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    trusted-users = [ "root" "q" ];
+    allowed-users = [ "q" ];
+    sandbox = true;
+    substituters = [ "https://cache.nixos.org" ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+    ];
+  };
 
   # Bluetooth
   hardware.bluetooth.enable = true;
@@ -130,6 +139,11 @@
   # Networking
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ ];
+    allowedUDPPorts = [ ];
+  };
 
   # Locale / Time
   time.timeZone = "Europe/Copenhagen";
@@ -195,8 +209,30 @@
     polkitPolicyOwners = [ "q" ];
   };
 
+  # Security hardening
+  security.apparmor.enable = true;
+  security.sudo.wheelNeedsPassword = true;
+  users.users.root.hashedPassword = "!";
+
+  boot.kernel.sysctl = {
+    "kernel.kptr_restrict" = 2;
+    "kernel.dmesg_restrict" = 1;
+    "kernel.yama.ptrace_scope" = 1;
+    "net.ipv4.conf.all.accept_redirects" = 0;
+    "net.ipv4.conf.default.accept_redirects" = 0;
+    "net.ipv4.conf.all.send_redirects" = 0;
+    "net.ipv4.conf.default.send_redirects" = 0;
+    "net.ipv4.tcp_syncookies" = 1;
+  };
+
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = "25.11";
+  system.autoUpgrade = {
+    enable = true;
+    allowReboot = false;
+    dates = "daily";
+    flake = "/etc/nixos";
+  };
   nix.gc = {
     automatic = true;
     dates = "weekly";
