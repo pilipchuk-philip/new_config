@@ -11,6 +11,16 @@ let
     version = "local";
     src = ./vendor/vim-plugin-ruscmd;
   };
+  smartPaste = pkgs.vimUtils.buildVimPlugin {
+    pname = "smart-paste.nvim";
+    version = "2026-02-17";
+    src = pkgs.fetchFromGitHub {
+      owner = "nemanjamalesija";
+      repo = "smart-paste.nvim";
+      rev = "9ea6755e73bcee9bbcef008ec2dd1278edd69228";
+      sha256 = "1hs7hhvm0v2idh5gazg5jy2qymjz4jpaba8rlh6s5z4idacpi4s7";
+    };
+  };
   copilotChat = pkgs.vimPlugins."CopilotChat-nvim";
   treesitterWithParsers = pkgs.vimPlugins.nvim-treesitter.withPlugins (p: [
     p.c
@@ -22,6 +32,7 @@ let
     p.lua
     p.markdown
     p.markdown_inline
+    p.python
     p.query
     p.regex
     p.scss
@@ -95,6 +106,7 @@ in
       vim-tmux-navigator
       wilder-nvim
       dropbar-nvim
+      smartPaste
     ];
 
     extraFiles = {
@@ -532,6 +544,8 @@ in
       vim.keymap.set("n", "gK", require("hover").hover_select, { desc = "hover.nvim (select)" })
       vim.keymap.set("n", "<MouseMove>", require("hover").hover_mouse, { desc = "hover.nvim (mouse)" })
       vim.o.mousemoveevent = true
+
+      require("smart-paste").setup()
 
       require("mini.icons").setup()
       MiniIcons.mock_nvim_web_devicons()
