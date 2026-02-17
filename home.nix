@@ -21,7 +21,6 @@
     unrar
     signal-desktop
     telegram-desktop
-    vscode
     spotify
     tailscale
     tailscale-systray

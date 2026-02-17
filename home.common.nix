@@ -1,7 +1,10 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
-  imports = [ ./nixvim.nix ];
+  imports = [
+    ./nixvim.nix
+    ./vscode.nix
+  ];
 
   home.stateVersion = "25.11";
   programs.home-manager.enable = true;
@@ -46,8 +49,11 @@
   };
 
   # Набор базовых утилит, которые почти всегда нужны в nvim-воркфлоу
-  home.packages = with pkgs; [
-    cifs-utils
+  home.packages = with pkgs;
+    (lib.optionals stdenv.isLinux [
+      cifs-utils
+    ])
+    ++ [
     git
     ripgrep
     fd
@@ -102,7 +108,7 @@
     lynx
     rustc
     cargo
-  ];
+    ];
 
   xdg.configFile."vale/styles".source = pkgs.valeStyles.proselint;
   home.file.".vale.ini".text = ''
