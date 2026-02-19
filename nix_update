@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+if command -v nix-update >/dev/null 2>&1; then
+  exec nix-update "$@"
+fi
+
+unset CDPATH
+repo_dir="$(cd -- "$(dirname -- "$0")" && pwd)"
+exec "${repo_dir}/scripts/nix-update.sh" "$@"

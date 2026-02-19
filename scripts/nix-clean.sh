@@ -1,0 +1,75 @@
+#!/bin/sh
+set -eu
+
+dry_run=0
+keep_days=""
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --dry-run)
+      dry_run=1
+      shift
+      ;;
+    --keep-days)
+      if [ "$#" -lt 2 ]; then
+        echo "Usage: nix-clean [--dry-run] [--keep-days N]"
+        exit 1
+      fi
+      keep_days="$2"
+      shift 2
+      ;;
+    *)
+      echo "Usage: nix-clean [--dry-run] [--keep-days N]"
+      exit 1
+      ;;
+  esac
+done
+
+if [ -n "$keep_days" ]; then
+  case "$keep_days" in
+    ''|*[!0-9]*)
+      echo "--keep-days must be a non-negative integer"
+      exit 1
+      ;;
+  esac
+fi
+
+run() {
+  if [ "$dry_run" -eq 1 ]; then
+    echo "+ $*"
+  else
+    "$@"
+  fi
+}
+
+os="$(uname -s)"
+
+echo "#########################################################################"
+echo "#   System Generations (${os})"
+if [ -e /nix/var/nix/profiles/system ]; then
+  run sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
+else
+  echo "System profile not found at /nix/var/nix/profiles/system"
+fi
+
+echo "#########################################################################"
+echo "#   User/Home Generations"
+if command -v home-manager >/dev/null 2>&1; then
+  run home-manager generations
+else
+  run nix-env --list-generations
+fi
+
+if [ -n "$keep_days" ]; then
+  run nix-env --delete-generations "${keep_days}d"
+else
+  run nix-env --delete-generations +5
+fi
+
+echo "#########################################################################"
+echo "#   Garbage Collection"
+run nix-collect-garbage -d
+
+if [ -e /nix/var/nix/profiles/system ]; then
+  run sudo nix-collect-garbage -d
+fi

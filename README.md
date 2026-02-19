@@ -89,3 +89,46 @@ sudo nixos-rebuild switch --flake .#nixos
 # macOS
 darwin-rebuild switch --flake .#mac
 ```
+
+## Helper Scripts
+
+This repo includes reusable scripts in `scripts/` and installs them as shell commands:
+
+1. `nix-update` - updates flake inputs and applies the system config
+2. `nix-clean` - shows generations, prunes old user generations, runs GC
+
+These commands are available after you apply the config (`nixos-rebuild` or `darwin-rebuild`).
+Before first apply, use root wrappers: `./nix_update` and `./nix_clean`.
+
+Both scripts auto-detect OS:
+
+1. Linux: uses `nixos-rebuild` with `.#nixos`
+2. macOS: uses `darwin-rebuild` with `.#mac`
+
+### Normal Run
+
+```bash
+nix-update
+nix-clean
+```
+
+### Dry Run
+
+Use `--dry-run` to print commands without executing:
+
+```bash
+nix-update --dry-run
+nix-clean --dry-run
+```
+
+`nix-clean` also supports `--keep-days N` to keep only generations newer than `N` days:
+
+```bash
+nix-clean --keep-days 14
+nix-clean --dry-run --keep-days 30
+```
+
+Compatibility wrappers still exist in repo root:
+
+1. `./nix_update` -> `nix-update`
+2. `./nix_clean` -> `nix-clean`

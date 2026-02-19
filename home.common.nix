@@ -1,5 +1,8 @@
 { config, pkgs, lib, ... }:
 
+let
+  localScripts = import ./pkgs/scripts.nix { inherit pkgs; };
+in
 {
   imports = [
     ./nixvim.nix
@@ -67,6 +70,7 @@
     btop
     fzf
     lazygit
+    age
     luajit
     rsync
     nodejs
@@ -108,7 +112,8 @@
     lynx
     rustc
     cargo
-    ];
+    ]
+    ++ localScripts;
 
   xdg.configFile."vale/styles".source = pkgs.valeStyles.proselint;
   home.file.".vale.ini".text = ''
