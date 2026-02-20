@@ -12,9 +12,11 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     darwin.url = "github:LnL7/nix-darwin/nix-darwin-25.11";
     darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-darwin, nixpkgs-unstable, nixvim, home-manager, darwin, ... }:
+  outputs = { self, nixpkgs, nixpkgs-darwin, nixpkgs-unstable, nixvim, home-manager, darwin, sops-nix, ... }:
   let
     linuxSystem = "x86_64-linux";
     darwinSystem = "aarch64-darwin";
@@ -39,7 +41,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
 	  home-manager.backupFileExtension = "bak";
-          home-manager.sharedModules = [ nixvim.homeModules.nixvim ];
+          home-manager.sharedModules = [ nixvim.homeModules.nixvim sops-nix.homeManagerModules.sops ];
           home-manager.users.q = import ./home.nix;
         }
       ];
@@ -58,7 +60,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "bak";
-          home-manager.sharedModules = [ nixvim.homeModules.nixvim ];
+          home-manager.sharedModules = [ nixvim.homeModules.nixvim sops-nix.homeManagerModules.sops ];
           home-manager.users.q = import ./home.darwin.nix;
         }
       ];

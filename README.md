@@ -132,3 +132,72 @@ Compatibility wrappers still exist in repo root:
 
 1. `./nix_update` -> `nix-update`
 2. `./nix_clean` -> `nix-clean`
+
+## SOPS + age Secrets
+
+This repo is wired for `sops-nix` via Home Manager on both NixOS and macOS.
+
+Current defaults:
+
+1. `sops` package is installed
+2. key file path is `${HOME}/.config/sops/age/keys.txt`
+3. `.sops.yaml` defines encryption rules for `secrets/*.yaml`
+
+If you prefer storing the key in `~/.ssh`, change:
+
+```nix
+sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
+```
+
+to:
+
+```nix
+sops.age.keyFile = "${config.home.homeDirectory}/.ssh/age_sops_key.txt";
+```
+
+Then generate key there:
+
+```bash
+mkdir -p ~/.ssh
+age-keygen -o ~/.ssh/age_sops_key.txt
+chmod 600 ~/.ssh/age_sops_key.txt
+age-keygen -y ~/.ssh/age_sops_key.txt
+```
+
+### 1) Create an age key for SOPS
+
+```bash
+mkdir -p ~/.config/sops/age
+age-keygen -o ~/.config/sops/age/keys.txt
+age-keygen -y ~/.config/sops/age/keys.txt
+```
+
+Copy the `age1...` public recipient from the last command into `.sops.yaml` (replace `age1replace_with_your_public_recipient`).
+
+### 2) Create encrypted secrets file
+
+```bash
+sops secrets/secrets.yaml
+```
+
+Example content inside editor:
+
+```yaml
+github_token: "ghp_..."
+api_key: "..."
+```
+
+SOPS will save it encrypted (safe to commit).
+
+### 3) Use a secret from Home Manager
+
+Add this to `home.common.nix` (or OS-specific home file):
+
+```nix
+sops.secrets.github_token = {
+  sopsFile = ./secrets/secrets.yaml;
+  path = "${config.home.homeDirectory}/.config/secrets/github_token";
+};
+```
+
+After apply, the decrypted value will be available at that path.

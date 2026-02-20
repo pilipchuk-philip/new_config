@@ -13,6 +13,7 @@ in
   programs.home-manager.enable = true;
 
   xdg.enable = true;
+  sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 
   home.file.".config/p10k.zsh".source = ./p10k.zsh;
 
@@ -71,6 +72,7 @@ in
     fzf
     lazygit
     age
+    sops
     luajit
     rsync
     nodejs

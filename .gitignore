@@ -1,0 +1,4 @@
+# local/decrypted secret material
+*.dec
+secrets/*.local.yaml
+secrets/*.decrypted.yaml
