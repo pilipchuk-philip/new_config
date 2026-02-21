@@ -31,6 +31,11 @@ in
       fd = "fd --hidden --color always -i ";
     };
     initContent = ''
+      if [ -d /etc/nixos/scripts ]; then
+        export PATH="/etc/nixos/scripts:$PATH"
+      elif [ -d "${config.home.homeDirectory}/new_config/scripts" ]; then
+        export PATH="${config.home.homeDirectory}/new_config/scripts:$PATH"
+      fi
       export PATH="$(npm config get prefix)/bin:$PATH"
       export POWERLEVEL9K_CONFIG_FILE=${config.xdg.configHome}/p10k.zsh
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme

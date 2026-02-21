@@ -92,13 +92,17 @@ darwin-rebuild switch --flake .#mac
 
 ## Helper Scripts
 
-This repo includes reusable scripts in `scripts/` and installs them as shell commands:
+This repo includes reusable scripts in `scripts/`. The full `scripts/` directory is available in PATH after you apply the config:
 
 1. `nix-update` - updates flake inputs and applies the system config
 2. `nix-clean` - shows generations, prunes old user generations, runs GC
 
+Current scripts in `scripts/`:
+
+1. `nix-update`
+2. `nix-clean`
+
 These commands are available after you apply the config (`nixos-rebuild` or `darwin-rebuild`).
-Before first apply, use root wrappers: `./nix_update` and `./nix_clean`.
 
 Both scripts auto-detect OS:
 
@@ -128,10 +132,7 @@ nix-clean --keep-days 14
 nix-clean --dry-run --keep-days 30
 ```
 
-Compatibility wrappers still exist in repo root:
-
-1. `./nix_update` -> `nix-update`
-2. `./nix_clean` -> `nix-clean`
+Compatibility wrappers were removed from the repo root.
 
 ## SOPS + age Secrets
 

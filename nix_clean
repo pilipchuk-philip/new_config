@@ -1,9 +1,0 @@
-#!/bin/sh
-set -eu
-
-if command -v nix-clean >/dev/null 2>&1; then
-  exec nix-clean "$@"
-fi
-
-repo_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-exec "${repo_dir}/scripts/nix-clean.sh" "$@"
