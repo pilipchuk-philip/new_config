@@ -23,6 +23,9 @@
   programs.zsh = {
     enable = true;
     enableCompletion = true;
+    interactiveShellInit = ''
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    '';
   };
 
   fonts.packages = with pkgs; [
@@ -34,4 +37,16 @@
     home = "/Users/q";
     shell = pkgs.zsh;
   };
+
+  # Homebrew configuration
+  homebrew.enable = true;
+  homebrew.caskArgs.no_quarantine = true;
+  homebrew.onActivation.autoUpdate = true;
+  homebrew.onActivation.upgrade = true;
+  homebrew.onActivation.cleanup = "zap";
+  
+  homebrew.casks = [
+    "ghostty"
+    "codex"
+  ];
 }

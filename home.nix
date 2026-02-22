@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   imports = [ ./home.common.nix ];
@@ -9,7 +9,6 @@
     mangohud           # FPS/frametime overlay
     gamemode           # Feral GameMode
     vkbasalt           # optional: post-processing
-    ghostty
     vulkan-tools
     mullvad-vpn
     jetbrains.pycharm

@@ -7,6 +7,7 @@ in
   imports = [
     ./nixvim.nix
     ./vscode.nix
+    ./tmux.nix
   ];
 
   home.stateVersion = "25.11";
