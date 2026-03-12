@@ -200,6 +200,11 @@ sops.secrets.github_token = {
   path = "${config.home.homeDirectory}/.config/secrets/github_token";
 };
 ```
+# darwin 
+/etc/nix/nix.conf
+```
+experimental-features = nix-command flakes
+```
 
 After apply, the decrypted value will be available at that path.
 
