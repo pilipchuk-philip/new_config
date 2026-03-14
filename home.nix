@@ -3,6 +3,11 @@
 {
   imports = [ ./home.common.nix ];
 
+  programs.git.settings.user = {
+    name = "pilipchuk-philip";
+    email = "pilipchuk.philip@gmail.com";
+  };
+
   home.packages = with pkgs; [
     steam
     steam-run          # иногда спасает старые бинарники

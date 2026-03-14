@@ -36,9 +36,4 @@
   homebrew.onActivation.autoUpdate = true;
   homebrew.onActivation.upgrade = true;
   homebrew.onActivation.cleanup = "zap";
-
-  homebrew.casks = [
-    "ghostty"
-    "codex"
-  ];
 }
