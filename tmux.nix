@@ -50,6 +50,13 @@ in
       setw -g window-status-style fg=white,bg=black
       set -g status-right-length 200
       set -g @tmux-weather-location "Copenhagen"
+      set -g status-interval 5
+
+      # Home Manager loads plugins before this extraConfig block.
+      # Re-run interpolation plugins after status-right is defined.
+      run-shell ${pkgs.tmuxPlugins.cpu.rtp}
+      run-shell ${pkgs.tmuxPlugins.battery.rtp}
+      run-shell ${pkgs.tmuxPlugins.weather.rtp}
 
       is_vim="ps -o state= -o comm= -t '#{pane_tty}' | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|l?n?vim?x?|fzf|pipenv|poetry)(diff)?$'"
       bind-key -n C-h if-shell "$is_vim" 'send-keys C-h' 'select-pane -L'
