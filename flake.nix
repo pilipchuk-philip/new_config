@@ -1,5 +1,5 @@
 {
-  description = "NixOS 25.11 + Home Manager 25.11 (user: q)";
+  description = "NixOS 25.11 + Home Manager 25.11 (users: q, ppy)";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -54,14 +54,33 @@
         config.allowUnfree = true;
       };
       modules = [
-        ./darwin.nix
+        ./darwin/personal.nix
         home-manager.darwinModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "bak";
           home-manager.sharedModules = [ nixvim.homeModules.nixvim sops-nix.homeManagerModules.sops ];
-          home-manager.users.q = import ./home.darwin.nix;
+          home-manager.users.q = import ./home/darwin-personal.nix;
+        }
+      ];
+    };
+
+    darwinConfigurations.mac-work = darwin.lib.darwinSystem {
+      system = darwinSystem;
+      pkgs = import nixpkgs-darwin {
+        system = darwinSystem;
+        config.allowUnfree = true;
+      };
+      modules = [
+        ./darwin/work.nix
+        home-manager.darwinModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.backupFileExtension = "bak";
+          home-manager.sharedModules = [ nixvim.homeModules.nixvim sops-nix.homeManagerModules.sops ];
+          home-manager.users.ppy = import ./home/darwin-work.nix;
         }
       ];
     };

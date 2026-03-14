@@ -202,3 +202,24 @@ sops.secrets.github_token = {
 ```
 
 After apply, the decrypted value will be available at that path.
+
+## macOS Builds
+
+Personal Mac (`q`):
+
+```bash
+sudo darwin-rebuild switch --flake "path:$PWD#mac"
+```
+
+Work Mac (`ppy`):
+
+```bash
+sudo darwin-rebuild switch --flake "path:$PWD#mac-work"
+```
+
+If all new files are already added to git, you can also use:
+
+```bash
+sudo darwin-rebuild switch --flake .#mac
+sudo darwin-rebuild switch --flake .#mac-work
+```
