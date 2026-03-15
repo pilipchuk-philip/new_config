@@ -38,10 +38,17 @@ in
         export PATH="${config.home.homeDirectory}/new_config/scripts:$PATH"
       fi
       export PATH="$(npm config get prefix)/bin:$PATH"
+      eval "$(uv generate-shell-completion zsh)"
+      eval "$(uvx --generate-shell-completion zsh)"
       export POWERLEVEL9K_CONFIG_FILE=${config.xdg.configHome}/p10k.zsh
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
       source ${config.xdg.configHome}/p10k.zsh
     '';
+  };
+
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
   };
 
   programs.git = {

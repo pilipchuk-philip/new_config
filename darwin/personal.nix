@@ -15,6 +15,7 @@
   homebrew.casks = [
     "ghostty"
     "codex"
+    "postgresql@16"
   ];
 
   users.users.q = {

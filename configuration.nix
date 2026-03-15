@@ -6,8 +6,14 @@
   ];
 
   nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    trusted-users = [ "root" "q" ];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    trusted-users = [
+      "root"
+      "q"
+    ];
     allowed-users = [ "q" ];
     sandbox = true;
     substituters = [ "https://cache.nixos.org" ];
@@ -49,7 +55,12 @@
   ];
 
   # Подгружаем модули NVIDIA пораньше (часто лечит black screen)
-  boot.initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
+  boot.initrd.kernelModules = [
+    "nvidia"
+    "nvidia_modeset"
+    "nvidia_uvm"
+    "nvidia_drm"
+  ];
 
   services.xserver = {
     enable = true;
@@ -84,7 +95,6 @@
       ExecStart = "/run/current-system/sw/bin/nvidia-smi -pm 1";
     };
   };
-
 
   # NixOS 25.11: вместо hardware.opengl используем hardware.graphics
   hardware.graphics = {
@@ -164,7 +174,11 @@
     isNormalUser = true;
     description = "q";
     shell = pkgs.zsh;
-    extraGroups = [ "networkmanager" "wheel" "video" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "video"
+    ];
     packages = with pkgs; [
       kdePackages.kate
     ];
@@ -188,7 +202,11 @@
     ohMyZsh = {
       enable = true;
       #theme = "powerlevel10k/powerlevel10k";
-      plugins = [ "git" "sudo" "docker" ];
+      plugins = [
+        "git"
+        "sudo"
+        "docker"
+      ];
     };
     promptInit = ''
       export POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
@@ -201,7 +219,6 @@
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
   };
-
 
   programs._1password.enable = true;
   programs._1password-gui = {
@@ -239,6 +256,5 @@
     options = "--delete-older-than 10d";
   };
   nix.settings.auto-optimise-store = true;
-
 
 }
