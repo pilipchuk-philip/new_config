@@ -491,6 +491,10 @@ in
         "notebook.source.fixAll" = "explicit";
         "notebook.source.organizeImports" = "explicit";
       };
+      "nix.formatterPath" = "nixfmt";
+      "[nix]" = {
+        "editor.defaultFormatter" = "jnoortheen.nix-ide";
+      };
       "[python]" = {
         "editor.codeActionsOnSave" = {
           "source.fixAll" = "explicit";

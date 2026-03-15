@@ -4,7 +4,10 @@
   system.stateVersion = 5;
 
   nix.enable = true;
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   nixpkgs.config.allowUnfree = true;
 
@@ -30,10 +33,4 @@
     jetbrains-mono
     nerd-fonts.jetbrains-mono
   ];
-
-  homebrew.enable = true;
-  homebrew.caskArgs.no_quarantine = true;
-  homebrew.onActivation.autoUpdate = true;
-  homebrew.onActivation.upgrade = true;
-  homebrew.onActivation.cleanup = "zap";
 }

@@ -97,6 +97,7 @@ in
     terraform-ls
 
     # format-on-save tools
+    nixfmt-rfc-style
     ruff
     nodePackages.prettier
     shfmt
