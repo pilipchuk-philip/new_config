@@ -107,7 +107,8 @@ These commands are available after you apply the config (`nixos-rebuild` or `dar
 Both scripts auto-detect OS:
 
 1. Linux: uses `nixos-rebuild` with `.#nixos`
-2. macOS: uses `darwin-rebuild` with `.#mac`
+2. macOS user `q`: uses `darwin-rebuild` with `.#mac`
+3. macOS user `ppy`: uses `darwin-rebuild` with `.#mac-work`
 
 ### Normal Run
 

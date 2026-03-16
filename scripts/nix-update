@@ -22,6 +22,7 @@ run() {
 unset CDPATH
 repo_dir="$(cd -- "$(dirname -- "$0")/.." && pwd)"
 flake_ref=""
+current_user="$(id -un)"
 
 case "$(uname -s)" in
   Linux)
@@ -29,8 +30,19 @@ case "$(uname -s)" in
     rebuild_cmd="nixos-rebuild"
     ;;
   Darwin)
-    flake_ref="${repo_dir}#mac"
     rebuild_cmd="darwin-rebuild"
+    case "$current_user" in
+      q)
+        flake_ref="${repo_dir}#mac"
+        ;;
+      ppy)
+        flake_ref="${repo_dir}#mac-work"
+        ;;
+      *)
+        echo "Unsupported Darwin user: ${current_user}"
+        exit 1
+        ;;
+    esac
     ;;
   *)
     echo "Unsupported OS: $(uname -s)"
@@ -41,6 +53,7 @@ esac
 echo "#########################################################################"
 echo "#   Nix Update"
 echo "#   Repo: ${repo_dir}"
+echo "#   User: ${current_user}"
 echo "#   Flake: ${flake_ref}"
 
 cd "${repo_dir}"

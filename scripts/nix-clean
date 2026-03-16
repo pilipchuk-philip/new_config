@@ -27,7 +27,7 @@ done
 
 if [ -n "$keep_days" ]; then
   case "$keep_days" in
-    ''|*[!0-9]*)
+    '' | *[!0-9]*)
       echo "--keep-days must be a non-negative integer"
       exit 1
       ;;
@@ -43,7 +43,37 @@ run() {
 }
 
 os="$(uname -s)"
+current_user="$(id -un)"
+flake_ref=""
 
+case "$os" in
+  Linux)
+    flake_ref="#nixos"
+    ;;
+  Darwin)
+    case "$current_user" in
+      q)
+        flake_ref="#mac"
+        ;;
+      ppy)
+        flake_ref="#mac-work"
+        ;;
+      *)
+        echo "Unsupported Darwin user: ${current_user}"
+        exit 1
+        ;;
+    esac
+    ;;
+  *)
+    echo "Unsupported OS: ${os}"
+    exit 1
+    ;;
+esac
+
+echo "#########################################################################"
+echo "#   Nix Clean"
+echo "#   User: ${current_user}"
+echo "#   Target: ${flake_ref}"
 echo "#########################################################################"
 echo "#   System Generations (${os})"
 if [ -e /nix/var/nix/profiles/system ]; then
@@ -54,7 +84,7 @@ fi
 
 echo "#########################################################################"
 echo "#   User/Home Generations"
-if command -v home-manager >/dev/null 2>&1; then
+if command -v home-manager > /dev/null 2>&1; then
   run home-manager generations
 else
   run nix-env --list-generations
