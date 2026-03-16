@@ -13,6 +13,7 @@
 
   homebrew.brews = [
     "postgresql@16"
+    "pgcli"
   ];
 
   homebrew.casks = [
