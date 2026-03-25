@@ -69,7 +69,7 @@
     xkb = {
       layout = "us,ru";
       variant = "";
-      options = "grp:win_space_toggle,ctrl:nocaps";
+      options = "grp:alt_space_toggle,caps:escape";
     };
   };
 
@@ -206,6 +206,8 @@
         "git"
         "sudo"
         "docker"
+        "zsh-autosuggestions"
+        "zsh-syntax-highlighting"
       ];
     };
     promptInit = ''

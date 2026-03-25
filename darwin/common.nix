@@ -13,6 +13,11 @@
 
   security.pam.services.sudo_local.touchIdAuth = true;
 
+  system.keyboard = {
+    enableKeyMapping = true;
+    remapCapsLockToEscape = true;
+  };
+
   system.defaults = {
     NSGlobalDomain = {
       ApplePressAndHoldEnabled = false;

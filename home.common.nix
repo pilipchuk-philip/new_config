@@ -20,6 +20,7 @@ in
 
   programs.zsh = {
     enable = true;
+    autosuggestion.enable = true;
     shellAliases = {
       ls = "lsd";
       tree = "ls --tree";
@@ -44,6 +45,7 @@ in
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
       source ${config.xdg.configHome}/p10k.zsh
     '';
+    syntaxHighlighting.enable = true;
   };
 
   programs.direnv = {
