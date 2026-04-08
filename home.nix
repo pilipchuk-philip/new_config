@@ -18,10 +18,7 @@
     mullvad-vpn
     jetbrains.pycharm
     kdePackages.francis
-    kdiff3
     thunderbird-bin
-    krename
-    krusader
     unrar
     signal-desktop
     telegram-desktop

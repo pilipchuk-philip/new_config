@@ -32,7 +32,7 @@
   services.blueman.enable = true;
 
   # Bootloader
-  boot.loader.timeout = 0;
+  boot.loader.timeout = 5;
   boot.consoleLogLevel = 0;
   boot.initrd.verbose = false;
   boot.plymouth.enable = true;
@@ -86,45 +86,22 @@
     package = config.boot.kernelPackages.nvidiaPackages.production;
   };
 
-  systemd.services.nvidia-persistence = {
-    description = "Enable NVIDIA persistence mode";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "/run/current-system/sw/bin/nvidia-smi -pm 1";
-    };
-  };
-
   # NixOS 25.11: вместо hardware.opengl используем hardware.graphics
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
   };
 
-  # KDE Plasma 6 (X11 only)
-  services.displayManager.sddm = {
-    enable = true;
-    # wayland.enable = false;
-
-    settings = {
-      General = {
-        DisplayServer = "x11";
-      };
-      Theme = {
-        ThemeDir = "/etc/sddm/themes";
-        Current = "astronaut";
-      };
-    };
-  };
-
-  services.displayManager.defaultSession = "plasmax11";
-  services.desktopManager.plasma6.enable = true;
+  # Cinnamon on X11
+  services.xserver.displayManager.lightdm.enable = true;
+  services.displayManager.defaultSession = "cinnamon";
+  services.xserver.desktopManager.cinnamon.enable = true;
+  services.gnome.gnome-keyring.enable = true;
 
   # VAAPI + Chrome SSO
   environment.sessionVariables = {
     LIBVA_DRIVER_NAME = "nvidia";
-    CHROME_PASSWORD_STORE = "kwallet6";
+    CHROME_PASSWORD_STORE = "gnome-libsecret";
     NVD_BACKEND = "direct";
     __GL_THREADED_OPTIMIZATIONS = "1";
     __GL_MaxFramesAllowed = "1";
@@ -139,10 +116,8 @@
     mesa-demos
     pciutils
     usbutils
-    kdePackages.sddm-kcm
     qt6.qtmultimedia
     neovim
-    kdePackages.kconfig
     codex
   ];
 
@@ -180,7 +155,7 @@
       "video"
     ];
     packages = with pkgs; [
-      kdePackages.kate
+      xed-editor
     ];
   };
 
