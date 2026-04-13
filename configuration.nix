@@ -91,12 +91,8 @@
     enable = true;
     enable32Bit = true;
   };
-
-  # Cinnamon on X11
-  services.xserver.displayManager.lightdm.enable = true;
-  services.displayManager.defaultSession = "cinnamon";
-  services.xserver.desktopManager.cinnamon.enable = true;
-  services.gnome.gnome-keyring.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
 
   # VAAPI + Chrome SSO
   environment.sessionVariables = {
@@ -225,7 +221,7 @@
     enable = true;
     allowReboot = false;
     dates = "daily";
-    flake = "/etc/nixos";
+    flake = "/etc/nixos/hosts/nixos";
   };
   nix.gc = {
     automatic = true;

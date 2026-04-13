@@ -1,21 +1,22 @@
 # Nix Config (Linux + macOS)
 
-This repository contains a single `flake` configuration for:
+This repository contains host-specific `flake` configurations for:
 
-1. NixOS (`nixosConfigurations.nixos`)
-2. macOS via nix-darwin (`darwinConfigurations.mac`)
+1. NixOS via `hosts/nixos`
+2. macOS via `hosts/mac`
 
 Home Manager is already integrated for both targets, so no separate HM setup is required.
 
 ## Structure
 
-1. `flake.nix` - entry point and system definitions
-2. `configuration.nix` - NixOS system configuration
-3. `darwin.nix` - macOS system configuration (nix-darwin)
-4. `home.common.nix` - shared user packages and shell config
-5. `home.nix` - Linux-specific user config
-6. `home.darwin.nix` - macOS-specific user config
-7. `nixvim.nix` - Neovim configuration via nixvim
+1. `hosts/nixos/flake.nix` - NixOS entry point and Linux lock file owner
+2. `hosts/mac/flake.nix` - macOS entry point and Darwin lock file owner
+3. `configuration.nix` - NixOS system configuration
+4. `darwin/` - macOS system modules
+5. `home.common.nix` - shared user packages and shell config
+6. `home.nix` - Linux-specific user config
+7. `home/darwin-*.nix` - macOS-specific user configs
+8. `nixvim.nix` - Neovim configuration via nixvim
 
 ## Linux Installation (NixOS)
 
@@ -39,7 +40,7 @@ cd ~/new_config
 ### 2) Apply the system configuration
 
 ```bash
-sudo nixos-rebuild switch --flake .#nixos
+sudo nixos-rebuild switch --flake ./hosts/nixos#nixos
 ```
 
 ## macOS Installation (nix-darwin)
@@ -57,37 +58,39 @@ cd ~/new_config
 ### 2) Bootstrap nix-darwin and apply for the first time
 
 ```bash
-nix run nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake .#mac
+nix run nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake ./hosts/mac#mac
 ```
 
 ### 3) Apply further changes
 
 ```bash
-darwin-rebuild switch --flake .#mac
+darwin-rebuild switch --flake ./hosts/mac#mac
 ```
 
 ## Update and Validation
 
-1. Update the lock file:
+1. Update the host lock file you actually use:
 
 ```bash
-nix flake update
+cd hosts/nixos && nix flake update
+cd hosts/mac && nix flake update
 ```
 
 2. Validate the flake (without building):
 
 ```bash
-nix flake check --no-build
+cd hosts/nixos && nix flake check --no-build
+cd hosts/mac && nix flake check --no-build
 ```
 
 3. Apply changes:
 
 ```bash
 # Linux
-sudo nixos-rebuild switch --flake .#nixos
+sudo nixos-rebuild switch --flake ./hosts/nixos#nixos
 
 # macOS
-darwin-rebuild switch --flake .#mac
+darwin-rebuild switch --flake ./hosts/mac#mac
 ```
 
 ## Helper Scripts
@@ -106,9 +109,9 @@ These commands are available after you apply the config (`nixos-rebuild` or `dar
 
 Both scripts auto-detect OS:
 
-1. Linux: uses `nixos-rebuild` with `.#nixos`
-2. macOS user `q`: uses `darwin-rebuild` with `.#mac`
-3. macOS user `ppy`: uses `darwin-rebuild` with `.#mac-work`
+1. Linux: uses `nixos-rebuild` with `./hosts/nixos#nixos`
+2. macOS user `q`: uses `darwin-rebuild` with `./hosts/mac#mac`
+3. macOS user `ppy`: uses `darwin-rebuild` with `./hosts/mac#mac-work`
 
 ### Normal Run
 
@@ -214,18 +217,13 @@ After apply, the decrypted value will be available at that path.
 Personal Mac (`q`):
 
 ```bash
-sudo darwin-rebuild switch --flake "path:$PWD#mac"
+sudo darwin-rebuild switch --flake "./hosts/mac#mac"
 ```
 
 Work Mac (`ppy`):
 
 ```bash
-sudo darwin-rebuild switch --flake "path:$PWD#mac-work"
+sudo darwin-rebuild switch --flake "./hosts/mac#mac-work"
 ```
 
-If all new files are already added to git, you can also use:
-
-```bash
-sudo darwin-rebuild switch --flake .#mac
-sudo darwin-rebuild switch --flake .#mac-work
-```
+Use the `hosts/mac` flake directly.
