@@ -714,10 +714,18 @@ in
         if #text > 0 then return text else return "" end
       end
 
+      keymap("n", "<C-f>", function()
+        require("telescope").extensions.live_grep_args.live_grep_args()
+      end, { desc = "Live Grep Args" })
+
+      keymap("i", "<C-f>", function()
+        require("telescope").extensions.live_grep_args.live_grep_args()
+      end, { desc = "Live Grep Args" })
+
       keymap("v", "<C-f>", function()
         local text = vim.getVisualSelection()
         require("telescope").extensions.live_grep_args.live_grep_args({ default_text = text })
-      end)
+      end, { desc = "Live Grep Args Selection" })
 
       function CopyRelativePath()
         local current_file = vim.fn.expand("%")

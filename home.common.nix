@@ -21,6 +21,15 @@ in
 
   programs.zsh = {
     enable = true;
+    oh-my-zsh = {
+      enable = true;
+      theme = "";
+      plugins = [
+        "git"
+        "sudo"
+        "docker"
+      ];
+    };
     autosuggestion.enable = true;
     shellAliases = {
       ls = "lsd";

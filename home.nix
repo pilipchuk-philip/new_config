@@ -16,7 +16,7 @@
     vkbasalt           # optional: post-processing
     vulkan-tools
     mullvad-vpn
-    jetbrains.pycharm
+#    jetbrains.pycharm
     kdePackages.francis
     thunderbird-bin
     unrar
