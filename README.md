@@ -3,20 +3,22 @@
 This repository contains host-specific `flake` configurations for:
 
 1. NixOS via `hosts/nixos`
-2. macOS via `hosts/mac`
+2. Ubuntu desktop via `hosts/ubuntu-desktop`
+3. macOS via `hosts/mac`
 
 Home Manager is already integrated for both targets, so no separate HM setup is required.
 
 ## Structure
 
 1. `hosts/nixos/flake.nix` - NixOS entry point and Linux lock file owner
-2. `hosts/mac/flake.nix` - macOS entry point and Darwin lock file owner
-3. `configuration.nix` - NixOS system configuration
-4. `darwin/` - macOS system modules
-5. `home.common.nix` - shared user packages and shell config
-6. `home.nix` - Linux-specific user config
-7. `home/darwin-*.nix` - macOS-specific user configs
-8. `nixvim.nix` - Neovim configuration via nixvim
+2. `hosts/ubuntu-desktop/flake.nix` - Ubuntu desktop Home Manager host
+3. `hosts/mac/flake.nix` - macOS entry point and Darwin lock file owner
+4. `configuration.nix` - NixOS system configuration
+5. `darwin/` - macOS system modules
+6. `home.common.nix` - shared user packages and shell config
+7. `home.nix` - Linux-specific user config
+8. `home/darwin-*.nix` - macOS-specific user configs
+9. `nixvim.nix` - Neovim configuration via nixvim
 
 ## Linux Installation (NixOS)
 
@@ -67,12 +69,31 @@ nix run nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake ./hosts/mac
 darwin-rebuild switch --flake ./hosts/mac#mac
 ```
 
+## Ubuntu Desktop (Home Manager)
+
+### 1) Preparation
+
+1. Install Nix.
+2. Clone this repository:
+
+```bash
+git clone <REPO_URL> ~/new_config
+cd ~/new_config
+```
+
+### 2) Apply the user environment
+
+```bash
+NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager/release-25.11 -- switch --flake ./hosts/ubuntu-desktop#ubuntu-desktop
+```
+
 ## Update and Validation
 
 1. Update the host lock file you actually use:
 
 ```bash
 cd hosts/nixos && nix flake update
+cd hosts/ubuntu-desktop && nix flake update
 cd hosts/mac && nix flake update
 ```
 
@@ -80,6 +101,7 @@ cd hosts/mac && nix flake update
 
 ```bash
 cd hosts/nixos && nix flake check --no-build
+cd hosts/ubuntu-desktop && nix flake check --no-build
 cd hosts/mac && nix flake check --no-build
 ```
 
@@ -88,6 +110,9 @@ cd hosts/mac && nix flake check --no-build
 ```bash
 # Linux
 sudo nixos-rebuild switch --flake ./hosts/nixos#nixos
+
+# Ubuntu desktop
+NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager/release-25.11 -- switch --flake ./hosts/ubuntu-desktop#ubuntu-desktop
 
 # macOS
 darwin-rebuild switch --flake ./hosts/mac#mac
@@ -107,11 +132,12 @@ Current scripts in `scripts/`:
 
 These commands are available after you apply the config (`nixos-rebuild` or `darwin-rebuild`).
 
-Both scripts auto-detect OS:
+Both scripts auto-detect the current host type:
 
-1. Linux: uses `nixos-rebuild` with `./hosts/nixos#nixos`
-2. macOS user `q`: uses `darwin-rebuild` with `./hosts/mac#mac`
-3. macOS user `ppy`: uses `darwin-rebuild` with `./hosts/mac#mac-work`
+1. NixOS: uses `nixos-rebuild` with `./hosts/nixos#nixos`
+2. Ubuntu/non-NixOS Linux: uses Home Manager with `./hosts/ubuntu-desktop#ubuntu-desktop`
+3. macOS user `q`: uses `darwin-rebuild` with `./hosts/mac#mac`
+4. macOS user `ppy`: uses `darwin-rebuild` with `./hosts/mac#mac-work`
 
 ### Normal Run
 

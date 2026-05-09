@@ -37,11 +37,11 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "bak";
-          home-manager.sharedModules = [
+          home-manager.users.q.imports = [
             nixvim.homeModules.nixvim
             sops-nix.homeManagerModules.sops
+            ../../home.nix
           ];
-          home-manager.users.q = import ../../home.nix;
         }
       ];
     };

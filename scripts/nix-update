@@ -21,22 +21,32 @@ run() {
 
 unset CDPATH
 repo_dir="$(cd -- "$(dirname -- "$0")/.." && pwd)"
-flake_ref=""
+host_dir=""
 current_user="$(id -un)"
+apply_kind=""
+flake_attr=""
 
 case "$(uname -s)" in
   Linux)
-    flake_ref="${repo_dir}#nixos"
-    rebuild_cmd="nixos-rebuild"
+    if command -v nixos-rebuild >/dev/null 2>&1; then
+      host_dir="${repo_dir}/hosts/nixos"
+      apply_kind="nixos"
+      flake_attr="nixos"
+    else
+      host_dir="${repo_dir}/hosts/ubuntu-desktop"
+      apply_kind="home-manager"
+      flake_attr="ubuntu-desktop"
+    fi
     ;;
   Darwin)
-    rebuild_cmd="darwin-rebuild"
+    host_dir="${repo_dir}/hosts/mac"
+    apply_kind="darwin"
     case "$current_user" in
       q)
-        flake_ref="${repo_dir}#mac"
+        flake_attr="mac"
         ;;
       ppy)
-        flake_ref="${repo_dir}#mac-work"
+        flake_attr="mac-work"
         ;;
       *)
         echo "Unsupported Darwin user: ${current_user}"
@@ -54,17 +64,36 @@ echo "#########################################################################"
 echo "#   Nix Update"
 echo "#   Repo: ${repo_dir}"
 echo "#   User: ${current_user}"
-echo "#   Flake: ${flake_ref}"
+echo "#   Host Dir: ${host_dir}"
+echo "#   Attr: ${flake_attr}"
 
-cd "${repo_dir}"
+cd "${host_dir}"
 run nix flake update
 
-if ! command -v "${rebuild_cmd}" >/dev/null 2>&1; then
-  echo "Missing command: ${rebuild_cmd}"
-  exit 1
-fi
-
-run sudo "${rebuild_cmd}" switch --flake "${flake_ref}"
+case "${apply_kind}" in
+  nixos)
+    if ! command -v nixos-rebuild >/dev/null 2>&1; then
+      echo "Missing command: nixos-rebuild"
+      exit 1
+    fi
+    run sudo nixos-rebuild switch --flake "${host_dir}#${flake_attr}"
+    ;;
+  darwin)
+    if ! command -v darwin-rebuild >/dev/null 2>&1; then
+      echo "Missing command: darwin-rebuild"
+      exit 1
+    fi
+    run sudo darwin-rebuild switch --flake "${host_dir}#${flake_attr}"
+    ;;
+  home-manager)
+    run env NIX_CONFIG="experimental-features = nix-command flakes" \
+      nix run home-manager/release-25.11 -- switch --flake "${host_dir}#${flake_attr}"
+    ;;
+  *)
+    echo "Unsupported apply kind: ${apply_kind}"
+    exit 1
+    ;;
+esac
 
 echo "#########################################################################"
 echo "#   Nix Update Complete"

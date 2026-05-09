@@ -3,6 +3,12 @@
 let
   marketplaceExtensions = pkgs.vscode-utils.extensionsFromVscodeMarketplace [
     {
+      publisher = "OpenAI";
+      name = "chatgpt";
+      version = "26.5513.21555";
+      sha256 = "0hs4vn77wd9x7ic00s673ixaw4i1bs8wlr68nlnv60yhm3l80lgr";
+    }
+    {
       publisher = "igorsbitnev";
       name = "error-gutters";
       version = "1.0.1";
@@ -430,6 +436,7 @@ in
       "security.workspace.trust.untrustedFiles" = "open";
       "editor.wordWrap" = "off";
       "terminal.integrated.inheritEnv" = false;
+      "terminal.integrated.shellIntegration.enabled" = true;
       "terminal.integrated.fontFamily" = "JetbrainsMono Nerd Font, Regular";
       "editor.fontFamily" = "JetbrainsMono Nerd Font, Regular";
       "editor.minimap.enabled" = false;
@@ -452,13 +459,6 @@ in
       "window.customTitleBarVisibility" = "auto";
       "window.titleBarStyle" = "custom";
       "vim.leader" = "<space>";
-      "terminal.integrated.profiles.osx" = {
-        "tmux-shell" = {
-          path = "tmux";
-          args = [ "new-session" "-A" "-s" "vscode:\${workspaceFolder}" ];
-        };
-      };
-      "terminal.integrated.defaultProfile.osx" = "tmux-shell";
       "window.commandCenter" = true;
       "workbench.layoutControl.enabled" = false;
       "workbench.editor.pinnedTabSizing" = "compact";

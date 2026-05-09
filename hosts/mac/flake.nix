@@ -23,15 +23,10 @@
       inherit system;
       config.allowUnfree = true;
     };
-    sharedHomeModules = [
-      nixvim.homeModules.nixvim
-      sops-nix.homeManagerModules.sops
-    ];
     sharedHomeSettings = {
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.backupFileExtension = "bak";
-      home-manager.sharedModules = sharedHomeModules;
     };
   in
   {
@@ -41,7 +36,11 @@
         ../../darwin/personal.nix
         home-manager.darwinModules.home-manager
         (sharedHomeSettings // {
-          home-manager.users.q = import ../../home/darwin-personal.nix;
+          home-manager.users.q.imports = [
+            nixvim.homeModules.nixvim
+            sops-nix.homeManagerModules.sops
+            ../../home/darwin-personal.nix
+          ];
         })
       ];
     };
@@ -52,7 +51,11 @@
         ../../darwin/work.nix
         home-manager.darwinModules.home-manager
         (sharedHomeSettings // {
-          home-manager.users.ppy = import ../../home/darwin-work.nix;
+          home-manager.users.ppy.imports = [
+            nixvim.homeModules.nixvim
+            sops-nix.homeManagerModules.sops
+            ../../home/darwin-work.nix
+          ];
         })
       ];
     };

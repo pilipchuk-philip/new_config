@@ -3,6 +3,7 @@
 You are an automated coding agent working inside a Nix repository with host-specific flakes that targets:
 
 - NixOS via `hosts/nixos`
+- Ubuntu desktop via Home Manager via `hosts/ubuntu-desktop`
 - macOS via nix-darwin via `hosts/mac`
 - Home Manager integrated for both
 - Neovim configured via `nixvim.nix`
@@ -21,7 +22,7 @@ Your job is to propose and implement changes **safely, reproducibly, and with mi
 
 ### 2) Respect the repo structure
 
-- `hosts/nixos/flake.nix` and `hosts/mac/flake.nix` are the entry points: keep them readable and stable.
+- `hosts/nixos/flake.nix`, `hosts/ubuntu-desktop/flake.nix`, and `hosts/mac/flake.nix` are the entry points: keep them readable and stable.
 - `home.common.nix` = shared user config (packages, shell, common defaults).
 - `home.nix` and `home.darwin.nix` = OS-specific user config only.
 - `configuration.nix` = NixOS system config only.
