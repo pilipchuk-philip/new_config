@@ -11,9 +11,6 @@ Home Manager is already integrated for both targets, so no separate HM setup is 
 ## Structure
 
 1. `flake.nix` - root entry point and lock file owner
-2. `hosts/nixos/flake.nix` - legacy NixOS host flake
-3. `hosts/ubuntu-desktop/flake.nix` - legacy Ubuntu desktop Home Manager host flake
-4. `hosts/mac/flake.nix` - legacy macOS host flake
 4. `configuration.nix` - NixOS system configuration
 5. `darwin/` - macOS system modules
 6. `home.common.nix` - shared user packages and shell config
