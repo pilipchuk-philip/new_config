@@ -25,6 +25,7 @@
     spotify
     tailscale
     tailscale-systray
+    bat
 
     # clipboard helpers (на Wayland/X11)
     wl-clipboard
