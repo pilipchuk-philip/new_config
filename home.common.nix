@@ -131,9 +131,6 @@ in
     vale
     valeStyles.proselint
     mypy
-    # Под вопросом, это нужно было для старого nvim
-    sqlite
-    tree-sitter
     imagemagick
     ghostscript
     tectonic

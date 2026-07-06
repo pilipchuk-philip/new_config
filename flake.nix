@@ -4,8 +4,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-
     nixvim.url = "github:nix-community/nixvim/nixos-25.11";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -28,7 +26,7 @@
     sops-nix-darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-darwin, nixpkgs-unstable, nixvim, nixvim-darwin, home-manager, home-manager-darwin, darwin, sops-nix, sops-nix-darwin, ... }:
+  outputs = inputs@{ self, nixpkgs, nixpkgs-darwin, nixvim, nixvim-darwin, home-manager, home-manager-darwin, darwin, sops-nix, sops-nix-darwin, ... }:
   let
     linuxSystem = "x86_64-linux";
     darwinSystem = "aarch64-darwin";
@@ -40,7 +38,6 @@
       system = darwinSystem;
       config.allowUnfree = true;
     };
-    pkgsUnstable = import nixpkgs-unstable { system = linuxSystem; };
     evalString = value: builtins.unsafeDiscardStringContext (toString value);
     sharedHomeSettings = {
       home-manager.useGlobalPkgs = true;
@@ -54,13 +51,6 @@
 
       modules = [
         ./configuration.nix
-        ({ ... }: {
-          nixpkgs.overlays = [
-            (_final: _prev: {
-              tree-sitter = pkgsUnstable.tree-sitter;
-            })
-          ];
-        })
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
