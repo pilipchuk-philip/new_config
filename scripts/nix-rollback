@@ -1,0 +1,109 @@
+#!/bin/sh
+set -eu
+
+dry_run=0
+list_only=0
+generation=""
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --dry-run)
+      dry_run=1
+      shift
+      ;;
+    --list)
+      list_only=1
+      shift
+      ;;
+    '' | *[!0-9]*)
+      echo "Usage: nix-rollback [--dry-run] [--list] [GENERATION]"
+      exit 1
+      ;;
+    *)
+      if [ -n "$generation" ]; then
+        echo "Usage: nix-rollback [--dry-run] [--list] [GENERATION]"
+        exit 1
+      fi
+      generation="$1"
+      shift
+      ;;
+  esac
+done
+
+run() {
+  if [ "$dry_run" -eq 1 ]; then
+    echo "+ $*"
+  else
+    "$@"
+  fi
+}
+
+system_profile="/nix/var/nix/profiles/system"
+os="$(uname -s)"
+
+echo "#########################################################################"
+echo "#   Nix Rollback"
+echo "#   OS: ${os}"
+
+list_generations() {
+  if [ -e "$system_profile" ]; then
+    run sudo nix-env --list-generations --profile "$system_profile"
+  elif command -v home-manager >/dev/null 2>&1; then
+    run home-manager generations
+  else
+    run nix-env --list-generations
+  fi
+}
+
+activate_system_profile() {
+  if [ -x "${system_profile}/bin/switch-to-configuration" ]; then
+    run sudo "${system_profile}/bin/switch-to-configuration" switch
+  elif [ -x "${system_profile}/activate" ]; then
+    run sudo "${system_profile}/activate"
+  else
+    echo "Cannot find activation command in ${system_profile}"
+    exit 1
+  fi
+}
+
+if [ "$list_only" -eq 1 ]; then
+  list_generations
+  exit 0
+fi
+
+if [ -n "$generation" ]; then
+  if [ ! -e "$system_profile" ]; then
+    echo "Specific generation rollback is only supported for system profiles"
+    echo "Use 'nix-rollback' without a generation for Home Manager rollback."
+    exit 1
+  fi
+
+  run sudo nix-env --switch-generation "$generation" --profile "$system_profile"
+  activate_system_profile
+  exit 0
+fi
+
+case "$os" in
+  Linux)
+    if command -v nixos-rebuild >/dev/null 2>&1; then
+      run sudo nixos-rebuild switch --rollback
+    elif command -v home-manager >/dev/null 2>&1; then
+      run home-manager switch --rollback
+    else
+      echo "Missing rollback command: nixos-rebuild or home-manager"
+      exit 1
+    fi
+    ;;
+  Darwin)
+    if command -v darwin-rebuild >/dev/null 2>&1; then
+      run sudo darwin-rebuild switch --rollback
+    else
+      echo "Missing command: darwin-rebuild"
+      exit 1
+    fi
+    ;;
+  *)
+    echo "Unsupported OS: ${os}"
+    exit 1
+    ;;
+esac

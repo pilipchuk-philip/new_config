@@ -110,8 +110,12 @@ sudo darwin-rebuild switch --flake .#mac-work
 
 The Home Manager config installs these helper commands:
 
-1. `nix-update` - updates flake inputs and applies the detected target
-2. `nix-clean` - shows generations, prunes old user generations, and runs GC
+1. `nix-apply` - applies the detected target without updating inputs
+2. `nix-check` - runs the standard flake and repo checks
+3. `nix-clean` - shows generations, prunes old user generations, and runs GC
+4. `nix-diff-lock` - previews how `flake.lock` would change after an update
+5. `nix-rollback` - lists generations or rolls back the current system/profile
+6. `nix-update` - updates flake inputs and applies the detected target
 
 `nix-update` auto-detects:
 
@@ -123,6 +127,9 @@ The Home Manager config installs these helper commands:
 Normal use:
 
 ```bash
+nix-apply
+nix-check
+nix-diff-lock
 nix-update
 nix-clean
 ```
@@ -130,6 +137,7 @@ nix-clean
 Dry runs:
 
 ```bash
+nix-apply --dry-run
 nix-update --dry-run
 nix-clean --dry-run
 ```
@@ -140,6 +148,17 @@ Keep only generations newer than a given number of days:
 nix-clean --keep-days 14
 nix-clean --dry-run --keep-days 30
 ```
+
+Rollback helpers:
+
+```bash
+nix-rollback --list
+nix-rollback
+nix-rollback --dry-run
+nix-rollback 42
+```
+
+`nix-rollback` with a numeric generation is supported for system profiles. For Home Manager-only machines, use plain `nix-rollback` to roll back to the previous generation.
 
 ## SOPS And Age
 

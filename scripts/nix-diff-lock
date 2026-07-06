@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -ne 0 ]; then
+  echo "Usage: nix-diff-lock"
+  exit 1
+fi
+
+unset CDPATH
+repo_dir="$(cd -- "$(dirname -- "$0")/.." && pwd)"
+tmp_dir="$(mktemp -d)"
+trap 'rm -rf "$tmp_dir"' EXIT HUP INT TERM
+
+cp "${repo_dir}/flake.nix" "${tmp_dir}/flake.nix"
+cp "${repo_dir}/flake.lock" "${tmp_dir}/flake.lock"
+
+echo "#########################################################################"
+echo "#   Nix Lock Diff"
+echo "#   Repo: ${repo_dir}"
+
+(
+  cd "${tmp_dir}"
+  nix flake update
+)
+
+echo "#########################################################################"
+echo "#   flake.lock diff"
+if diff -u "${repo_dir}/flake.lock" "${tmp_dir}/flake.lock"; then
+  echo "flake.lock is already up to date"
+fi
