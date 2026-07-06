@@ -24,7 +24,9 @@ Your job is to propose and implement changes **safely, reproducibly, and with mi
 
 - `flake.nix` is the root entry point and lock owner: keep it readable and stable.
 - `home.common.nix` = shared user config (packages, shell, common defaults).
-- `home.nix` and `home.darwin.nix` = OS-specific user config only.
+- `home.nix` = Linux-specific user config only.
+- `home/ubuntu-desktop.nix` = Ubuntu desktop Home Manager config only.
+- `home/darwin-*.nix` and `home.darwin.nix` = macOS-specific user config only.
 - `configuration.nix` = NixOS system config only.
 - `darwin.nix` = macOS system config only.
 - `nixvim.nix` = Neovim config only.

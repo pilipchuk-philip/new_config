@@ -11,12 +11,13 @@ Home Manager is already integrated for both targets, so no separate HM setup is 
 ## Structure
 
 1. `flake.nix` - root entry point and lock file owner
-4. `configuration.nix` - NixOS system configuration
-5. `darwin/` - macOS system modules
-6. `home.common.nix` - shared user packages and shell config
-7. `home.nix` - Linux-specific user config
-8. `home/darwin-*.nix` - macOS-specific user configs
-9. `nixvim.nix` - Neovim configuration via nixvim
+2. `configuration.nix` - NixOS system configuration
+3. `darwin/` - macOS system modules
+4. `home.common.nix` - shared user packages and shell config
+5. `home.nix` - Linux-specific user config
+6. `home/ubuntu-desktop.nix` - Ubuntu desktop Home Manager config
+7. `home/darwin-*.nix` - macOS-specific user configs
+8. `nixvim.nix` - Neovim configuration via nixvim
 
 ## Linux Installation (NixOS)
 

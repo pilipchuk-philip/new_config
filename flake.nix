@@ -78,24 +78,9 @@
     homeConfigurations.ubuntu-desktop = home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
       modules = [
-        ({ pkgs, ... }: {
-          imports = [
-            nixvim.homeModules.nixvim
-            sops-nix.homeManagerModules.sops
-            ./home.nix
-          ];
-          targets.genericLinux.enable = true;
-          fonts.fontconfig.enable = true;
-          home.username = "q";
-          home.homeDirectory = "/home/q";
-          home.packages = [
-            # pkgs._1password-cli
-            # pkgs._1password-gui
-            pkgs.codex
-            pkgs.ghostty
-            pkgs.nerd-fonts.jetbrains-mono
-          ];
-        })
+        nixvim.homeModules.nixvim
+        sops-nix.homeManagerModules.sops
+        ./home/ubuntu-desktop.nix
       ];
     };
 
