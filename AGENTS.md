@@ -26,15 +26,15 @@ Your job is to propose and implement changes **safely, reproducibly, and with mi
 - `home.common.nix` = shared user config (packages, shell, common defaults).
 - `home.nix` = Linux-specific user config only.
 - `home/ubuntu-desktop.nix` = Ubuntu desktop Home Manager config only.
-- `home/darwin-*.nix` and `home.darwin.nix` = macOS-specific user config only.
+- `home/darwin-*.nix` = macOS-specific user config only.
 - `configuration.nix` = NixOS system config only.
-- `darwin.nix` = macOS system config only.
+- `darwin/*.nix` = macOS system config only.
 - `nixvim.nix` = Neovim config only.
 
 If unsure where something belongs, default to:
 
 - user-level → Home Manager (`home.*.nix`)
-- system-level → NixOS/darwin module (`configuration.nix` / `darwin.nix`)
+- system-level → NixOS/darwin module (`configuration.nix` / `darwin/*.nix`)
 
 ### 3) Do not weaken security
 
