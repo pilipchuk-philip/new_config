@@ -12,7 +12,6 @@ in
 
   home.stateVersion = "25.11";
   programs.home-manager.enable = true;
-  nixpkgs.config.allowUnfree = true;
 
   xdg.enable = true;
   sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";

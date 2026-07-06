@@ -3,6 +3,8 @@
 {
   imports = [ ../home.common.nix ];
 
+  nixpkgs.config.allowUnfree = true;
+
   targets.darwin.copyApps.enable = true;
   targets.darwin.linkApps.enable = false;
 
