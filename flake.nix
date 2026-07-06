@@ -28,7 +28,7 @@
     sops-nix-darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
   };
 
-  outputs = inputs@{ nixpkgs, nixpkgs-darwin, nixpkgs-unstable, nixvim, nixvim-darwin, home-manager, home-manager-darwin, darwin, sops-nix, sops-nix-darwin, ... }:
+  outputs = inputs@{ self, nixpkgs, nixpkgs-darwin, nixpkgs-unstable, nixvim, nixvim-darwin, home-manager, home-manager-darwin, darwin, sops-nix, sops-nix-darwin, ... }:
   let
     linuxSystem = "x86_64-linux";
     darwinSystem = "aarch64-darwin";
@@ -128,6 +128,26 @@
           ];
         })
       ];
+    };
+
+    checks = {
+      ${linuxSystem}.eval-configurations = pkgs.runCommand "eval-configurations" {
+        nixosToplevel = self.nixosConfigurations.nixos.config.system.build.toplevel.drvPath;
+        ubuntuActivation = self.homeConfigurations.ubuntu-desktop.activationPackage.drvPath;
+        darwinPersonal = self.darwinConfigurations.mac.system;
+        darwinWork = self.darwinConfigurations.mac-work.system;
+      } ''
+        touch "$out"
+      '';
+
+      ${darwinSystem}.eval-configurations = pkgsDarwin.runCommand "eval-configurations" {
+        nixosToplevel = self.nixosConfigurations.nixos.config.system.build.toplevel.drvPath;
+        ubuntuActivation = self.homeConfigurations.ubuntu-desktop.activationPackage.drvPath;
+        darwinPersonal = self.darwinConfigurations.mac.system;
+        darwinWork = self.darwinConfigurations.mac-work.system;
+      } ''
+        touch "$out"
+      '';
     };
   };
 }

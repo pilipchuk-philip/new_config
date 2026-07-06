@@ -102,6 +102,8 @@ nix flake update
 nix flake check --no-build
 ```
 
+This also evaluates the NixOS, Ubuntu Home Manager, and macOS configuration outputs.
+
 3. Apply changes:
 
 ```bash
