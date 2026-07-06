@@ -1,198 +1,157 @@
-# Nix Config (Linux + macOS)
+# Nix Config
 
-This repository contains host-specific `flake` configurations for:
+This repository is a single root flake for three targets:
 
-1. NixOS via `.#nixos`
-2. Ubuntu desktop via `.#ubuntu-desktop`
-3. macOS via `.#mac` and `.#mac-work`
+1. NixOS system: `.#nixos`
+2. Ubuntu desktop Home Manager profile: `.#ubuntu-desktop`
+3. macOS nix-darwin systems: `.#mac` and `.#mac-work`
 
-Home Manager is already integrated for both targets, so no separate HM setup is required.
+Use the root flake directly. There is no `hosts/` flake directory anymore.
 
 ## Structure
 
 1. `flake.nix` - root entry point and lock file owner
 2. `configuration.nix` - NixOS system configuration
-3. `darwin/` - macOS system modules
-4. `home.common.nix` - shared user packages and shell config
-5. `home.nix` - Linux-specific user config
-6. `home/ubuntu-desktop.nix` - Ubuntu desktop Home Manager config
-7. `home/darwin-*.nix` - macOS-specific user configs
-8. `nixvim.nix` - Neovim configuration via nixvim
+3. `hardware-configuration.nix` - NixOS hardware configuration
+4. `darwin/` - macOS system modules
+5. `home.common.nix` - shared Home Manager config
+6. `home.nix` - Linux user config
+7. `home/ubuntu-desktop.nix` - Ubuntu desktop Home Manager profile
+8. `home/darwin-*.nix` - macOS user profiles
+9. `nixvim.nix` - Neovim config via nixvim
+10. `vscode.nix`, `tmux.nix` - editor and terminal tooling
+11. `scripts/` - installed helper commands
+12. `vendor/` - local Neovim plugin sources and helper Lua modules
 
-## Linux Installation (NixOS)
+## NixOS
 
-### 1) Preparation
-
-1. Install NixOS (graphical or minimal installer).
-2. Log into the installed system.
-3. Install `git` if needed:
-
-```bash
-nix-shell -p git
-```
-
-4. Clone this repository and enter it:
+Clone the repo and switch to the NixOS configuration:
 
 ```bash
 git clone <REPO_URL> ~/new_config
 cd ~/new_config
-```
-
-### 2) Apply the system configuration
-
-```bash
 sudo nixos-rebuild switch --flake .#nixos
 ```
 
-## macOS Installation (nix-darwin)
+## macOS
 
-### 1) Preparation
-
-1. Install Nix (Determinate Nix Installer or the official installer).
-2. Clone this repository:
+Install Nix first, then clone the repo:
 
 ```bash
 git clone <REPO_URL> ~/new_config
 cd ~/new_config
 ```
 
-### 2) Bootstrap nix-darwin and apply for the first time
+Bootstrap nix-darwin for the personal machine:
 
 ```bash
-nix run nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake .#mac
+sudo nix run nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake .#mac
 ```
 
-### 3) Apply further changes
+Apply later changes:
 
 ```bash
-darwin-rebuild switch --flake .#mac
+sudo darwin-rebuild switch --flake .#mac
 ```
 
-## Ubuntu Desktop (Home Manager)
+For the work profile:
 
-### 1) Preparation
+```bash
+sudo darwin-rebuild switch --flake .#mac-work
+```
 
-1. Install Nix.
-2. Clone this repository:
+Absolute paths are also valid:
+
+```bash
+sudo darwin-rebuild switch --flake /Users/q/new_config#mac
+```
+
+## Ubuntu Desktop
+
+Install Nix, clone the repo, and apply the Home Manager profile:
 
 ```bash
 git clone <REPO_URL> ~/new_config
 cd ~/new_config
-```
-
-### 2) Apply the user environment
-
-```bash
 NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager/release-25.11 -- switch --flake .#ubuntu-desktop
 ```
 
-## Update and Validation
+## Update And Validate
 
-1. Update the root lock file:
+Update inputs:
 
 ```bash
 nix flake update
 ```
 
-2. Validate the flake (without building):
+Validate all configured systems without building them:
 
 ```bash
-nix flake check --no-build
+nix flake check --all-systems --no-build
 ```
 
-This also evaluates the NixOS, Ubuntu Home Manager, and macOS configuration outputs.
-
-3. Apply changes:
+Apply the target you use:
 
 ```bash
-# Linux
+# NixOS
 sudo nixos-rebuild switch --flake .#nixos
 
 # Ubuntu desktop
 NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager/release-25.11 -- switch --flake .#ubuntu-desktop
 
-# macOS
-darwin-rebuild switch --flake .#mac
+# macOS personal
+sudo darwin-rebuild switch --flake .#mac
+
+# macOS work
+sudo darwin-rebuild switch --flake .#mac-work
 ```
 
 ## Helper Scripts
 
-This repo includes reusable scripts in `scripts/`. The full `scripts/` directory is available in PATH after you apply the config:
+The Home Manager config installs these helper commands:
 
-1. `nix-update` - updates flake inputs and applies the system config
-2. `nix-clean` - shows generations, prunes old user generations, runs GC
+1. `nix-update` - updates flake inputs and applies the detected target
+2. `nix-clean` - shows generations, prunes old user generations, and runs GC
 
-Current scripts in `scripts/`:
+`nix-update` auto-detects:
 
-1. `nix-update`
-2. `nix-clean`
+1. NixOS: `sudo nixos-rebuild switch --flake <repo>#nixos`
+2. Ubuntu or other non-NixOS Linux: Home Manager with `<repo>#ubuntu-desktop`
+3. macOS user `q`: `sudo darwin-rebuild switch --flake <repo>#mac`
+4. macOS user `ppy`: `sudo darwin-rebuild switch --flake <repo>#mac-work`
 
-These commands are available after you apply the config (`nixos-rebuild` or `darwin-rebuild`).
-
-Both scripts auto-detect the current host type:
-
-1. NixOS: uses `nixos-rebuild` with `.#nixos`
-2. Ubuntu/non-NixOS Linux: uses Home Manager with `.#ubuntu-desktop`
-3. macOS user `q`: uses `darwin-rebuild` with `.#mac`
-4. macOS user `ppy`: uses `darwin-rebuild` with `.#mac-work`
-
-### Normal Run
+Normal use:
 
 ```bash
 nix-update
 nix-clean
 ```
 
-### Dry Run
-
-Use `--dry-run` to print commands without executing:
+Dry runs:
 
 ```bash
 nix-update --dry-run
 nix-clean --dry-run
 ```
 
-`nix-clean` also supports `--keep-days N` to keep only generations newer than `N` days:
+Keep only generations newer than a given number of days:
 
 ```bash
 nix-clean --keep-days 14
 nix-clean --dry-run --keep-days 30
 ```
 
-Compatibility wrappers were removed from the repo root.
+## SOPS And Age
 
-## SOPS + age Secrets
-
-This repo is wired for `sops-nix` via Home Manager on both NixOS and macOS.
+The repo is wired for `sops-nix` through Home Manager.
 
 Current defaults:
 
-1. `sops` package is installed
-2. key file path is `${HOME}/.config/sops/age/keys.txt`
-3. `.sops.yaml` defines encryption rules for `secrets/*.yaml`
+1. `sops` and `age` are installed
+2. age key path: `${HOME}/.config/sops/age/keys.txt`
+3. `.sops.yaml` applies to `secrets/*.yaml`
 
-If you prefer storing the key in `~/.ssh`, change:
-
-```nix
-sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
-```
-
-to:
-
-```nix
-sops.age.keyFile = "${config.home.homeDirectory}/.ssh/age_sops_key.txt";
-```
-
-Then generate key there:
-
-```bash
-mkdir -p ~/.ssh
-age-keygen -o ~/.ssh/age_sops_key.txt
-chmod 600 ~/.ssh/age_sops_key.txt
-age-keygen -y ~/.ssh/age_sops_key.txt
-```
-
-### 1) Create an age key for SOPS
+Create an age key:
 
 ```bash
 mkdir -p ~/.config/sops/age
@@ -200,26 +159,22 @@ age-keygen -o ~/.config/sops/age/keys.txt
 age-keygen -y ~/.config/sops/age/keys.txt
 ```
 
-Copy the `age1...` public recipient from the last command into `.sops.yaml` (replace `age1replace_with_your_public_recipient`).
+Copy the printed `age1...` recipient into `.sops.yaml`.
 
-### 2) Create encrypted secrets file
+Create an encrypted secrets file:
 
 ```bash
 sops secrets/secrets.yaml
 ```
 
-Example content inside editor:
+Example plaintext while editing with SOPS:
 
 ```yaml
 github_token: "ghp_..."
 api_key: "..."
 ```
 
-SOPS will save it encrypted (safe to commit).
-
-### 3) Use a secret from Home Manager
-
-Add this to `home.common.nix` (or OS-specific home file):
+Use a secret from Home Manager:
 
 ```nix
 sops.secrets.github_token = {
@@ -227,26 +182,15 @@ sops.secrets.github_token = {
   path = "${config.home.homeDirectory}/.config/secrets/github_token";
 };
 ```
-# darwin 
-/etc/nix/nix.conf
-```
+
+After activation, the decrypted value is available at the configured path.
+
+## Notes
+
+If `nix-command` and `flakes` are not enabled globally, add them to Nix config:
+
+```conf
 experimental-features = nix-command flakes
 ```
 
-After apply, the decrypted value will be available at that path.
-
-## macOS Builds
-
-Personal Mac (`q`):
-
-```bash
-sudo darwin-rebuild switch --flake ".#mac"
-```
-
-Work Mac (`ppy`):
-
-```bash
-sudo darwin-rebuild switch --flake ".#mac-work"
-```
-
-Use the root flake directly.
+For nix-darwin this is managed by `darwin/common.nix` after the first successful activation.
