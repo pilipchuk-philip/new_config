@@ -581,7 +581,7 @@ in
       ];
       };
 
-      keybindings = linuxKeybindings;
+      keybindings = if pkgs.stdenv.isDarwin then macKeybindings else linuxKeybindings;
     };
   };
 }
