@@ -73,7 +73,7 @@ in
     enable = true;
     settings = {
       alias = {
-        lg = "log --oneline --graph --decorate";
+        lg = "log --graph --decorate --pretty=format:'%C(auto)%h %C(bold blue)%an%Creset %C(auto)%d %s'";
         gs = "status";
       };
     };
