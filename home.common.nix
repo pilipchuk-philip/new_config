@@ -174,7 +174,7 @@ in
       chmod 600 "$codex_config"
     elif grep -q '^\[tui\]$' "$codex_config"; then
       ${pkgs.perl}/bin/perl -0pi -e '
-        my $line = q{status_line = ["model", "context-used", "context-window-size", "five-hour-limit", "weekly-limit", "used-tokens"]};
+        my $line = q{status_line = ["model", "current-dir", "context-used", "context-window-size", "five-hour-limit", "weekly-limit", "used-tokens"]};
         s{^\[tui\]\n(?:status_line = \[.*?\]\n)?}{\[tui\]\n$line\n}ms
           or s{\z}{\n[tui]\n$line\n}ms;
       ' "$codex_config"
