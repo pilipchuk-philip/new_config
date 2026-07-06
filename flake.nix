@@ -41,6 +41,7 @@
       config.allowUnfree = true;
     };
     pkgsUnstable = import nixpkgs-unstable { system = linuxSystem; };
+    evalString = value: builtins.unsafeDiscardStringContext (toString value);
     sharedHomeSettings = {
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
@@ -132,19 +133,19 @@
 
     checks = {
       ${linuxSystem}.eval-configurations = pkgs.runCommand "eval-configurations" {
-        nixosToplevel = self.nixosConfigurations.nixos.config.system.build.toplevel.drvPath;
-        ubuntuActivation = self.homeConfigurations.ubuntu-desktop.activationPackage.drvPath;
-        darwinPersonal = self.darwinConfigurations.mac.system;
-        darwinWork = self.darwinConfigurations.mac-work.system;
+        nixosToplevel = evalString self.nixosConfigurations.nixos.config.system.build.toplevel.drvPath;
+        ubuntuActivation = evalString self.homeConfigurations.ubuntu-desktop.activationPackage.drvPath;
+        darwinPersonal = evalString self.darwinConfigurations.mac.system;
+        darwinWork = evalString self.darwinConfigurations.mac-work.system;
       } ''
         touch "$out"
       '';
 
       ${darwinSystem}.eval-configurations = pkgsDarwin.runCommand "eval-configurations" {
-        nixosToplevel = self.nixosConfigurations.nixos.config.system.build.toplevel.drvPath;
-        ubuntuActivation = self.homeConfigurations.ubuntu-desktop.activationPackage.drvPath;
-        darwinPersonal = self.darwinConfigurations.mac.system;
-        darwinWork = self.darwinConfigurations.mac-work.system;
+        nixosToplevel = evalString self.nixosConfigurations.nixos.config.system.build.toplevel.drvPath;
+        ubuntuActivation = evalString self.homeConfigurations.ubuntu-desktop.activationPackage.drvPath;
+        darwinPersonal = evalString self.darwinConfigurations.mac.system;
+        darwinWork = evalString self.darwinConfigurations.mac-work.system;
       } ''
         touch "$out"
       '';
