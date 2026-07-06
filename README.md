@@ -2,17 +2,18 @@
 
 This repository contains host-specific `flake` configurations for:
 
-1. NixOS via `hosts/nixos`
-2. Ubuntu desktop via `hosts/ubuntu-desktop`
-3. macOS via `hosts/mac`
+1. NixOS via `.#nixos`
+2. Ubuntu desktop via `.#ubuntu-desktop`
+3. macOS via `.#mac` and `.#mac-work`
 
 Home Manager is already integrated for both targets, so no separate HM setup is required.
 
 ## Structure
 
-1. `hosts/nixos/flake.nix` - NixOS entry point and Linux lock file owner
-2. `hosts/ubuntu-desktop/flake.nix` - Ubuntu desktop Home Manager host
-3. `hosts/mac/flake.nix` - macOS entry point and Darwin lock file owner
+1. `flake.nix` - root entry point and lock file owner
+2. `hosts/nixos/flake.nix` - legacy NixOS host flake
+3. `hosts/ubuntu-desktop/flake.nix` - legacy Ubuntu desktop Home Manager host flake
+4. `hosts/mac/flake.nix` - legacy macOS host flake
 4. `configuration.nix` - NixOS system configuration
 5. `darwin/` - macOS system modules
 6. `home.common.nix` - shared user packages and shell config
@@ -42,7 +43,7 @@ cd ~/new_config
 ### 2) Apply the system configuration
 
 ```bash
-sudo nixos-rebuild switch --flake ./hosts/nixos#nixos
+sudo nixos-rebuild switch --flake .#nixos
 ```
 
 ## macOS Installation (nix-darwin)
@@ -60,13 +61,13 @@ cd ~/new_config
 ### 2) Bootstrap nix-darwin and apply for the first time
 
 ```bash
-nix run nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake ./hosts/mac#mac
+nix run nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake .#mac
 ```
 
 ### 3) Apply further changes
 
 ```bash
-darwin-rebuild switch --flake ./hosts/mac#mac
+darwin-rebuild switch --flake .#mac
 ```
 
 ## Ubuntu Desktop (Home Manager)
@@ -84,38 +85,34 @@ cd ~/new_config
 ### 2) Apply the user environment
 
 ```bash
-NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager/release-25.11 -- switch --flake ./hosts/ubuntu-desktop#ubuntu-desktop
+NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager/release-25.11 -- switch --flake .#ubuntu-desktop
 ```
 
 ## Update and Validation
 
-1. Update the host lock file you actually use:
+1. Update the root lock file:
 
 ```bash
-cd hosts/nixos && nix flake update
-cd hosts/ubuntu-desktop && nix flake update
-cd hosts/mac && nix flake update
+nix flake update
 ```
 
 2. Validate the flake (without building):
 
 ```bash
-cd hosts/nixos && nix flake check --no-build
-cd hosts/ubuntu-desktop && nix flake check --no-build
-cd hosts/mac && nix flake check --no-build
+nix flake check --no-build
 ```
 
 3. Apply changes:
 
 ```bash
 # Linux
-sudo nixos-rebuild switch --flake ./hosts/nixos#nixos
+sudo nixos-rebuild switch --flake .#nixos
 
 # Ubuntu desktop
-NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager/release-25.11 -- switch --flake ./hosts/ubuntu-desktop#ubuntu-desktop
+NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager/release-25.11 -- switch --flake .#ubuntu-desktop
 
 # macOS
-darwin-rebuild switch --flake ./hosts/mac#mac
+darwin-rebuild switch --flake .#mac
 ```
 
 ## Helper Scripts
@@ -134,10 +131,10 @@ These commands are available after you apply the config (`nixos-rebuild` or `dar
 
 Both scripts auto-detect the current host type:
 
-1. NixOS: uses `nixos-rebuild` with `./hosts/nixos#nixos`
-2. Ubuntu/non-NixOS Linux: uses Home Manager with `./hosts/ubuntu-desktop#ubuntu-desktop`
-3. macOS user `q`: uses `darwin-rebuild` with `./hosts/mac#mac`
-4. macOS user `ppy`: uses `darwin-rebuild` with `./hosts/mac#mac-work`
+1. NixOS: uses `nixos-rebuild` with `.#nixos`
+2. Ubuntu/non-NixOS Linux: uses Home Manager with `.#ubuntu-desktop`
+3. macOS user `q`: uses `darwin-rebuild` with `.#mac`
+4. macOS user `ppy`: uses `darwin-rebuild` with `.#mac-work`
 
 ### Normal Run
 
@@ -243,13 +240,13 @@ After apply, the decrypted value will be available at that path.
 Personal Mac (`q`):
 
 ```bash
-sudo darwin-rebuild switch --flake "./hosts/mac#mac"
+sudo darwin-rebuild switch --flake ".#mac"
 ```
 
 Work Mac (`ppy`):
 
 ```bash
-sudo darwin-rebuild switch --flake "./hosts/mac#mac-work"
+sudo darwin-rebuild switch --flake ".#mac-work"
 ```
 
-Use the `hosts/mac` flake directly.
+Use the root flake directly.

@@ -21,7 +21,7 @@ run() {
 
 unset CDPATH
 repo_dir="$(cd -- "$(dirname -- "$0")/.." && pwd)"
-host_dir=""
+flake_dir="${repo_dir}"
 current_user="$(id -un)"
 apply_kind=""
 flake_attr=""
@@ -29,17 +29,14 @@ flake_attr=""
 case "$(uname -s)" in
   Linux)
     if command -v nixos-rebuild >/dev/null 2>&1; then
-      host_dir="${repo_dir}/hosts/nixos"
       apply_kind="nixos"
       flake_attr="nixos"
     else
-      host_dir="${repo_dir}/hosts/ubuntu-desktop"
       apply_kind="home-manager"
       flake_attr="ubuntu-desktop"
     fi
     ;;
   Darwin)
-    host_dir="${repo_dir}/hosts/mac"
     apply_kind="darwin"
     case "$current_user" in
       q)
@@ -64,10 +61,10 @@ echo "#########################################################################"
 echo "#   Nix Update"
 echo "#   Repo: ${repo_dir}"
 echo "#   User: ${current_user}"
-echo "#   Host Dir: ${host_dir}"
+echo "#   Flake Dir: ${flake_dir}"
 echo "#   Attr: ${flake_attr}"
 
-cd "${host_dir}"
+cd "${flake_dir}"
 run nix flake update
 
 case "${apply_kind}" in
@@ -76,18 +73,18 @@ case "${apply_kind}" in
       echo "Missing command: nixos-rebuild"
       exit 1
     fi
-    run sudo nixos-rebuild switch --flake "${host_dir}#${flake_attr}"
+    run sudo nixos-rebuild switch --flake "${flake_dir}#${flake_attr}"
     ;;
   darwin)
     if ! command -v darwin-rebuild >/dev/null 2>&1; then
       echo "Missing command: darwin-rebuild"
       exit 1
     fi
-    run sudo darwin-rebuild switch --flake "${host_dir}#${flake_attr}"
+    run sudo darwin-rebuild switch --flake "${flake_dir}#${flake_attr}"
     ;;
   home-manager)
     run env NIX_CONFIG="experimental-features = nix-command flakes" \
-      nix run home-manager/release-25.11 -- switch --flake "${host_dir}#${flake_attr}"
+      nix run home-manager/release-25.11 -- switch --flake "${flake_dir}#${flake_attr}"
     ;;
   *)
     echo "Unsupported apply kind: ${apply_kind}"

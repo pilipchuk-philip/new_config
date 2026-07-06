@@ -1,0 +1,133 @@
+{
+  description = "Cross-platform Nix config";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    nixvim.url = "github:nix-community/nixvim/nixos-25.11";
+    nixvim.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixvim-darwin.url = "github:nix-community/nixvim/nixos-25.11";
+    nixvim-darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
+
+    home-manager.url = "github:nix-community/home-manager/release-25.11";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    home-manager-darwin.url = "github:nix-community/home-manager/release-25.11";
+    home-manager-darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
+
+    darwin.url = "github:LnL7/nix-darwin/nix-darwin-25.11";
+    darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
+
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    sops-nix-darwin.url = "github:Mic92/sops-nix";
+    sops-nix-darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
+  };
+
+  outputs = inputs@{ nixpkgs, nixpkgs-darwin, nixpkgs-unstable, nixvim, nixvim-darwin, home-manager, home-manager-darwin, darwin, sops-nix, sops-nix-darwin, ... }:
+  let
+    linuxSystem = "x86_64-linux";
+    darwinSystem = "aarch64-darwin";
+    pkgs = import nixpkgs {
+      system = linuxSystem;
+      config.allowUnfree = true;
+    };
+    pkgsDarwin = import nixpkgs-darwin {
+      system = darwinSystem;
+      config.allowUnfree = true;
+    };
+    pkgsUnstable = import nixpkgs-unstable { system = linuxSystem; };
+    sharedHomeSettings = {
+      home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
+      home-manager.backupFileExtension = "bak";
+    };
+  in
+  {
+    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      system = linuxSystem;
+
+      modules = [
+        ./configuration.nix
+        ({ ... }: {
+          nixpkgs.overlays = [
+            (_final: _prev: {
+              tree-sitter = pkgsUnstable.tree-sitter;
+            })
+          ];
+        })
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.backupFileExtension = "bak";
+          home-manager.users.q.imports = [
+            nixvim.homeModules.nixvim
+            sops-nix.homeManagerModules.sops
+            ./home.nix
+          ];
+        }
+      ];
+    };
+
+    homeConfigurations.ubuntu-desktop = home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
+      modules = [
+        ({ pkgs, ... }: {
+          imports = [
+            nixvim.homeModules.nixvim
+            sops-nix.homeManagerModules.sops
+            ./home.nix
+          ];
+          targets.genericLinux.enable = true;
+          fonts.fontconfig.enable = true;
+          home.username = "q";
+          home.homeDirectory = "/home/q";
+          home.packages = [
+            # pkgs._1password-cli
+            # pkgs._1password-gui
+            pkgs.codex
+            pkgs.ghostty
+            pkgs.nerd-fonts.jetbrains-mono
+          ];
+        })
+      ];
+    };
+
+    darwinConfigurations.mac = darwin.lib.darwinSystem {
+      system = darwinSystem;
+      pkgs = pkgsDarwin;
+      modules = [
+        ./darwin/personal.nix
+        home-manager-darwin.darwinModules.home-manager
+        (sharedHomeSettings // {
+          home-manager.users.q.imports = [
+            nixvim-darwin.homeModules.nixvim
+            sops-nix-darwin.homeManagerModules.sops
+            ./home/darwin-personal.nix
+          ];
+        })
+      ];
+    };
+
+    darwinConfigurations.mac-work = darwin.lib.darwinSystem {
+      system = darwinSystem;
+      pkgs = pkgsDarwin;
+      modules = [
+        ./darwin/work.nix
+        home-manager-darwin.darwinModules.home-manager
+        (sharedHomeSettings // {
+          home-manager.users.ppy.imports = [
+            nixvim-darwin.homeModules.nixvim
+            sops-nix-darwin.homeManagerModules.sops
+            ./home/darwin-work.nix
+          ];
+        })
+      ];
+    };
+  };
+}
