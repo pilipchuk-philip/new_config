@@ -21,7 +21,6 @@ let
       sha256 = "1hs7hhvm0v2idh5gazg5jy2qymjz4jpaba8rlh6s5z4idacpi4s7";
     };
   };
-  copilotChat = pkgs.vimPlugins."CopilotChat-nvim";
   treesitterWithParsers = pkgs.vimPlugins.nvim-treesitter.withPlugins (p: [
     p.c
     p.css
@@ -51,6 +50,7 @@ in
   programs.nixvim = {
     enable = true;
     defaultEditor = true;
+    nixpkgs.source = pkgs.path;
     vimAlias = true;
     viAlias = true;
 
@@ -66,7 +66,6 @@ in
       cmp-under-comparator
       copilot-cmp
       copilot-lua
-      copilotChat
       kommentary
       nvim-snippy
       formatOnSave
@@ -96,6 +95,7 @@ in
       todo-comments-nvim
       transparent-nvim
       vim-bookmarks
+      which-key-nvim
       vim-dadbod
       vim-dadbod-completion
       vim-dadbod-ui
@@ -118,6 +118,7 @@ in
 
     extraConfigLua = ''
       vim.g.mapleader = " "
+      vim.g.sqlite_clib_path = "${pkgs.sqlite.out}/lib/libsqlite3.so"
       vim.g.maplocalleader = " "
 
       vim.o.hlsearch = false
@@ -308,12 +309,6 @@ in
         panel = { enabled = false },
       })
       require("copilot_cmp").setup()
-
-      require("CopilotChat").setup({
-        model = "gpt-5.1-codex-max",
-        mappings = { complete = { insert = "<Tab>" } },
-      })
-
       require("gitsigns").setup({
         signs = {
           add = { text = "│" },
@@ -568,7 +563,7 @@ in
       vim.api.nvim_set_hl(0, "BufferInactive", { fg = "#888888", bg = "#1A1A1A" })
 
       require("snacks").setup({
-        picker = { layout = { circle = true }, enabled = true },
+        picker = { layout = { circle = true }, enabled = true, db = { sqlite3_path = "${pkgs.sqlite.out}/lib/libsqlite3.so" } },
         bigfile = { enabled = true },
         indent = { enabled = true, hl = "NonText", priority = 1, scope = { enabled = false } },
         explorer = { enabled = true, notify = true, layout = { fullscreen = false } },
@@ -618,7 +613,7 @@ in
       vim.keymap.set("n", "gI", function() Snacks.picker.lsp_implementations() end, { desc = "Goto Implementation" })
       vim.keymap.set("n", "gy", function() Snacks.picker.lsp_type_definitions() end, { desc = "Goto Type Definition" })
       vim.keymap.set("n", "<leader>cR", function() Snacks.rename.rename_file() end, { desc = "Rename File" })
-      vim.keymap.set({ "n", "v" }, "<leader>gB", function() Snacks.gitbrowse() end, { desc = "Git Browse" })
+      vim.keymap.set({ "n", "x" }, "<leader>gB", function() Snacks.gitbrowse() end, { desc = "Git Browse" })
 
       Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
       Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")

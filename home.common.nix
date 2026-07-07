@@ -103,6 +103,7 @@ in
     luajit
     rsync
     nodejs
+    tree-sitter
     uv
     python313
 
