@@ -123,23 +123,41 @@
     };
 
     checks = {
-      ${linuxSystem}.eval-configurations = pkgs.runCommand "eval-configurations" {
-        nixosToplevel = evalString self.nixosConfigurations.nixos.config.system.build.toplevel.drvPath;
-        ubuntuActivation = evalString self.homeConfigurations.ubuntu-desktop.activationPackage.drvPath;
-        darwinPersonal = evalString self.darwinConfigurations.mac.system;
-        darwinWork = evalString self.darwinConfigurations.mac-work.system;
-      } ''
-        touch "$out"
-      '';
+      ${linuxSystem} = {
+        eval-linux = pkgs.runCommand "eval-linux-configurations" {
+          nixosToplevel = evalString self.nixosConfigurations.nixos.config.system.build.toplevel.drvPath;
+          ubuntuActivation = evalString self.homeConfigurations.ubuntu-desktop.activationPackage.drvPath;
+        } ''
+          touch "$out"
+        '';
 
-      ${darwinSystem}.eval-configurations = pkgsDarwin.runCommand "eval-configurations" {
-        nixosToplevel = evalString self.nixosConfigurations.nixos.config.system.build.toplevel.drvPath;
-        ubuntuActivation = evalString self.homeConfigurations.ubuntu-desktop.activationPackage.drvPath;
-        darwinPersonal = evalString self.darwinConfigurations.mac.system;
-        darwinWork = evalString self.darwinConfigurations.mac-work.system;
-      } ''
-        touch "$out"
-      '';
+        eval-all = pkgs.runCommand "eval-all-configurations" {
+          nixosToplevel = evalString self.nixosConfigurations.nixos.config.system.build.toplevel.drvPath;
+          ubuntuActivation = evalString self.homeConfigurations.ubuntu-desktop.activationPackage.drvPath;
+          darwinPersonal = evalString self.darwinConfigurations.mac.system;
+          darwinWork = evalString self.darwinConfigurations.mac-work.system;
+        } ''
+          touch "$out"
+        '';
+      };
+
+      ${darwinSystem} = {
+        eval-darwin = pkgsDarwin.runCommand "eval-darwin-configurations" {
+          darwinPersonal = evalString self.darwinConfigurations.mac.system;
+          darwinWork = evalString self.darwinConfigurations.mac-work.system;
+        } ''
+          touch "$out"
+        '';
+
+        eval-all = pkgsDarwin.runCommand "eval-all-configurations" {
+          nixosToplevel = evalString self.nixosConfigurations.nixos.config.system.build.toplevel.drvPath;
+          ubuntuActivation = evalString self.homeConfigurations.ubuntu-desktop.activationPackage.drvPath;
+          darwinPersonal = evalString self.darwinConfigurations.mac.system;
+          darwinWork = evalString self.darwinConfigurations.mac-work.system;
+        } ''
+          touch "$out"
+        '';
+      };
     };
   };
 }

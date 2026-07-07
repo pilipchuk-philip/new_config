@@ -221,7 +221,7 @@
     enable = true;
     allowReboot = false;
     dates = "daily";
-    flake = "/home/q/new_config";
+    flake = "/etc/nixos";
   };
   nix.gc = {
     automatic = true;
