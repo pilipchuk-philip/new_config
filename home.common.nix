@@ -108,10 +108,10 @@ in
     # LSP servers
     lua-language-server
     pyright
-    nodePackages.typescript-language-server
-    nodePackages.bash-language-server
-    nodePackages.vscode-langservers-extracted
-    nodePackages.yaml-language-server
+    typescript-language-server
+    bash-language-server
+    vscode-langservers-extracted
+    yaml-language-server
     dockerfile-language-server
     nil
     sqls
@@ -123,7 +123,7 @@ in
     # format-on-save tools
     nixfmt-rfc-style
     ruff
-    nodePackages.prettier
+    prettier
     shfmt
     go
     goimports-reviser
@@ -133,7 +133,7 @@ in
     imagemagick
     ghostscript
     tectonic
-    nodePackages.mermaid-cli
+    mermaid-cli
     gh
     lynx
     rustc
