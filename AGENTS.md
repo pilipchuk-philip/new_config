@@ -82,7 +82,7 @@ Prefer:
 
 - Use:
   ```bash
-  sudo nix run nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake .#mac
+  sudo nix run nix-darwin#darwin-rebuild -- switch --flake .#mac
   ```
 
 ## Codex Language: russian

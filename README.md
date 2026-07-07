@@ -45,7 +45,7 @@ cd ~/new_config
 Bootstrap nix-darwin for the personal machine:
 
 ```bash
-sudo nix run nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake .#mac
+sudo nix run nix-darwin#darwin-rebuild -- switch --flake .#mac
 ```
 
 Apply later changes:
@@ -73,7 +73,7 @@ Install Nix, clone the repo, and apply the Home Manager profile:
 ```bash
 git clone <REPO_URL> ~/new_config
 cd ~/new_config
-NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager/release-25.11 -- switch --flake .#ubuntu-desktop
+NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager -- switch --flake .#ubuntu-desktop
 ```
 
 ## Update And Validate
@@ -97,7 +97,7 @@ Apply the target you use:
 sudo nixos-rebuild switch --flake .#nixos
 
 # Ubuntu desktop
-NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager/release-25.11 -- switch --flake .#ubuntu-desktop
+NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager -- switch --flake .#ubuntu-desktop
 
 # macOS personal
 sudo darwin-rebuild switch --flake .#mac

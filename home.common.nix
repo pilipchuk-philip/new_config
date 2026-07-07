@@ -20,6 +20,7 @@ in
 
   programs.zsh = {
     enable = true;
+    dotDir = config.home.homeDirectory;
     oh-my-zsh = {
       enable = true;
       theme = "";
@@ -121,7 +122,7 @@ in
     terraform-ls
 
     # format-on-save tools
-    nixfmt-rfc-style
+    nixfmt
     ruff
     prettier
     shfmt

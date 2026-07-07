@@ -2,24 +2,20 @@
   description = "Cross-platform Nix config";
 
   inputs = {
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    # TODO: check unstable
-    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
-    # nixvim.url = "github:nix-community/nixvim/nixos-25.11";
+    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixvim.url = "github:nix-community/nixvim";
 
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
-    nixvim-darwin.url = "github:nix-community/nixvim/nixos-25.11";
+    nixvim-darwin.url = "github:nix-community/nixvim";
     nixvim-darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
 
     home-manager.url = "github:nix-community/home-manager";
-    # home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    home-manager-darwin.url = "github:nix-community/home-manager/release-25.11";
+    home-manager-darwin.url = "github:nix-community/home-manager";
     home-manager-darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
-    darwin.url = "github:LnL7/nix-darwin/nix-darwin-25.11";
+    darwin.url = "github:LnL7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
 
     sops-nix.url = "github:Mic92/sops-nix";
@@ -61,6 +57,9 @@
           home-manager.users.q.imports = [
             nixvim.homeModules.nixvim
             sops-nix.homeManagerModules.sops
+            ({ ... }: {
+              programs.nixvim.nixpkgs.source = nixpkgs;
+            })
             ./home.nix
           ];
         }
@@ -72,6 +71,9 @@
       modules = [
         nixvim.homeModules.nixvim
         sops-nix.homeManagerModules.sops
+        ({ ... }: {
+          programs.nixvim.nixpkgs.source = nixpkgs;
+        })
         ./home/ubuntu-desktop.nix
       ];
     };
@@ -86,6 +88,9 @@
           home-manager.users.q.imports = [
             nixvim-darwin.homeModules.nixvim
             sops-nix-darwin.homeManagerModules.sops
+            ({ ... }: {
+              programs.nixvim.nixpkgs.source = nixpkgs-darwin;
+            })
             ./home/darwin-personal.nix
           ];
         })
@@ -102,6 +107,9 @@
           home-manager.users.ppy.imports = [
             nixvim-darwin.homeModules.nixvim
             sops-nix-darwin.homeManagerModules.sops
+            ({ ... }: {
+              programs.nixvim.nixpkgs.source = nixpkgs-darwin;
+            })
             ./home/darwin-work.nix
           ];
         })
