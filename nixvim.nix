@@ -50,7 +50,6 @@ in
   programs.nixvim = {
     enable = true;
     defaultEditor = true;
-    nixpkgs.source = pkgs.path;
     vimAlias = true;
     viAlias = true;
 
@@ -118,7 +117,6 @@ in
 
     extraConfigLua = ''
       vim.g.mapleader = " "
-      vim.g.sqlite_clib_path = "${pkgs.sqlite.out}/lib/libsqlite3.so"
       vim.g.maplocalleader = " "
 
       vim.o.hlsearch = false

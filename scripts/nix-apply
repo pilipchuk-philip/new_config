@@ -71,7 +71,7 @@ case "${apply_kind}" in
     ;;
   home-manager)
     run env NIX_CONFIG="experimental-features = nix-command flakes" \
-      nix run home-manager -- switch --flake "${repo_dir}#${flake_attr}"
+      nix run "${repo_dir}#home-manager" -- switch --flake "${repo_dir}#${flake_attr}"
     ;;
   *)
     echo "Unsupported apply kind: ${apply_kind}"

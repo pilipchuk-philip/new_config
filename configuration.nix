@@ -183,7 +183,7 @@
     };
     promptInit = ''
       export POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
-      export POWERLEVEL9K_CONFIG_FILE=/etc/nixos/p10k.zsh
+      export POWERLEVEL9K_CONFIG_FILE=${./p10k.zsh}
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
     '';
   };
@@ -221,7 +221,7 @@
     enable = true;
     allowReboot = false;
     dates = "daily";
-    flake = "/etc/nixos/hosts/nixos";
+    flake = "/home/q/new_config";
   };
   nix.gc = {
     automatic = true;

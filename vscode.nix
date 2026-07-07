@@ -407,7 +407,6 @@ in
           github.copilot-chat
           github.github-vscode-theme
           gruntfuggly.todo-tree
-          github.github-vscode-theme
           jnoortheen.nix-ide
           ms-azuretools.vscode-containers
           ms-python.debugpy
@@ -522,22 +521,6 @@ in
           recursive = true;
         }
         {
-          before = [ "-" ];
-          commands = [ { command = "oil-code.open"; } ];
-        }
-        {
-          before = [ "<cr>" ];
-          commands = [ { command = "oil-code.select"; } ];
-        }
-        {
-          before = [ "<c-l>" ];
-          commands = [ { command = "oil-code.refresh"; } ];
-        }
-        {
-          before = [ "`" ];
-          commands = [ { command = "oil-code.cd"; } ];
-        }
-        {
           before = [ "<leader>" "c" "p" ];
           commands = [ "copyRelativeFilePath" ];
         }
@@ -548,10 +531,6 @@ in
         {
           before = [ "<leader>" "l" "s" ];
           commands = [ "workbench.action.gotoSymbol" ];
-        }
-        {
-          before = [ "<leader>" "g" "l" ];
-          commands = [ "git-graph.view" ];
         }
         {
           before = [ "<leader>" "t" ];

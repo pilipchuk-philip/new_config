@@ -116,6 +116,12 @@
       ];
     };
 
+    apps.${linuxSystem}.home-manager = {
+      type = "app";
+      program = "${home-manager.packages.${linuxSystem}.home-manager}/bin/home-manager";
+      meta.description = "Home Manager CLI from the locked flake input";
+    };
+
     checks = {
       ${linuxSystem}.eval-configurations = pkgs.runCommand "eval-configurations" {
         nixosToplevel = evalString self.nixosConfigurations.nixos.config.system.build.toplevel.drvPath;
