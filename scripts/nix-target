@@ -1,0 +1,33 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -ne 0 ]; then
+  echo "Usage: nix-target" >&2
+  exit 1
+fi
+
+current_user="$(id -un)"
+
+case "$(uname -s)" in
+  Linux)
+    if command -v nixos-rebuild >/dev/null 2>&1; then
+      printf '%s\n' "nixos:nixos"
+    else
+      printf '%s\n' "home-manager:ubuntu-desktop"
+    fi
+    ;;
+  Darwin)
+    case "$current_user" in
+      q) printf '%s\n' "darwin:mac" ;;
+      ppy) printf '%s\n' "darwin:mac-work" ;;
+      *)
+        echo "Unsupported Darwin user: ${current_user}" >&2
+        exit 1
+        ;;
+    esac
+    ;;
+  *)
+    echo "Unsupported OS: $(uname -s)" >&2
+    exit 1
+    ;;
+esac

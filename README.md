@@ -18,8 +18,8 @@ Use the root flake directly. There is no `hosts/` flake directory anymore.
 6. `home.nix` - Linux user config
 7. `home/ubuntu-desktop.nix` - Ubuntu desktop Home Manager profile
 8. `home/darwin-*.nix` - macOS user profiles
-9. `nixvim.nix` - Neovim config via nixvim
-10. `vscode.nix`, `tmux.nix` - editor and terminal tooling
+9. `nixvim.nix`, `home/nixvim/` - modular Neovim config via nixvim
+10. `vscode.nix`, `home/vscode/`, `tmux.nix` - modular editor and terminal tooling
 11. `scripts/` - installed helper commands
 12. `vendor/` - local Neovim plugin sources and helper Lua modules
 
@@ -115,7 +115,11 @@ The Home Manager config installs these helper commands:
 3. `nix-clean` - shows generations, prunes old user generations, and runs GC
 4. `nix-diff-lock` - previews how `flake.lock` would change after an update
 5. `nix-rollback` - lists generations or rolls back the current system/profile
-6. `nix-update` - updates flake inputs and applies the detected target
+6. `nix-update` - updates inputs, validates every target, and applies the detected target
+
+Target detection is shared by `nix-apply` and `nix-update` through the internal
+`nix-target` helper. The repository is resolved from `NIX_CONFIG_REPO`, the
+current Git root, or `$HOME/new_config`, in that order.
 
 `nix-update` auto-detects:
 
@@ -160,49 +164,14 @@ nix-rollback 42
 
 `nix-rollback` with a numeric generation is supported for system profiles. For Home Manager-only machines, use plain `nix-rollback` to roll back to the previous generation.
 
-## SOPS And Age
+`nix-update` does not activate a changed lock file until
+`nix flake check --all-systems --no-build` succeeds. A failed check leaves the
+updated `flake.lock` in the working tree for inspection.
 
-The repo is wired for `sops-nix` through Home Manager.
+## Secrets
 
-Current defaults:
-
-1. `sops` and `age` are installed
-2. age key path: `${HOME}/.config/sops/age/keys.txt`
-3. `.sops.yaml` applies to `secrets/*.yaml`
-
-Create an age key:
-
-```bash
-mkdir -p ~/.config/sops/age
-age-keygen -o ~/.config/sops/age/keys.txt
-age-keygen -y ~/.config/sops/age/keys.txt
-```
-
-Copy the printed `age1...` recipient into `.sops.yaml`.
-
-Create an encrypted secrets file:
-
-```bash
-sops secrets/secrets.yaml
-```
-
-Example plaintext while editing with SOPS:
-
-```yaml
-github_token: "ghp_..."
-api_key: "..."
-```
-
-Use a secret from Home Manager:
-
-```nix
-sops.secrets.github_token = {
-  sopsFile = ./secrets/secrets.yaml;
-  path = "${config.home.homeDirectory}/.config/secrets/github_token";
-};
-```
-
-After activation, the decrypted value is available at the configured path.
+SOPS integration is intentionally disabled until the repository has a real
+public age recipient. Never commit private age keys or decrypted secret files.
 
 ## Notes
 

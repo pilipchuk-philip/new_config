@@ -42,9 +42,7 @@ in
       fd
       lsd
       unzip
-      gcc
       wget
-      gnumake
       zip
       tmux
       btop
@@ -54,10 +52,8 @@ in
       sops
       luajit
       rsync
-      nodejs
       tree-sitter
       uv
-      python313
 
       # LSP servers
       lua-language-server
@@ -70,28 +66,22 @@ in
       nil
       sqls
       llvmPackages.clang-tools
-      jdt-language-server
       marksman
-      terraform-ls
 
       # format-on-save tools
       nixfmt
       ruff
       prettier
       shfmt
-      go
       goimports-reviser
       vale
       valeStyles.proselint
       mypy
       imagemagick
       ghostscript
-      tectonic
       mermaid-cli
       gh
       lynx
-      rustc
-      cargo
     ]
     ++ localScripts;
 

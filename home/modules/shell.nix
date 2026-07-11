@@ -1,7 +1,16 @@
 { config, pkgs, ... }:
 
+let
+  uvCompletions = pkgs.runCommand "uv-zsh-completions" { } ''
+    mkdir -p "$out"
+    ${pkgs.uv}/bin/uv generate-shell-completion zsh > "$out/_uv"
+    ${pkgs.uv}/bin/uvx --generate-shell-completion zsh > "$out/_uvx"
+  '';
+in
+
 {
   home.file.".config/p10k.zsh".source = ../../p10k.zsh;
+  xdg.configFile."zsh/completions".source = uvCompletions;
 
   programs.zsh = {
     enable = true;
@@ -28,14 +37,7 @@
       fd = "fd --hidden --color always -i ";
     };
     initContent = ''
-      if [ -d /etc/nixos/scripts ]; then
-        export PATH="/etc/nixos/scripts:$PATH"
-      elif [ -d "${config.home.homeDirectory}/new_config/scripts" ]; then
-        export PATH="${config.home.homeDirectory}/new_config/scripts:$PATH"
-      fi
-      export PATH="$(npm config get prefix)/bin:$PATH"
-      eval "$(uv generate-shell-completion zsh)"
-      eval "$(uvx --generate-shell-completion zsh)"
+      fpath=("${config.xdg.configHome}/zsh/completions" $fpath)
       export POWERLEVEL9K_CONFIG_FILE=${config.xdg.configHome}/p10k.zsh
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
       source ${config.xdg.configHome}/p10k.zsh

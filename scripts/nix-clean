@@ -91,15 +91,24 @@ else
 fi
 
 if [ -n "$keep_days" ]; then
-  run nix-env --delete-generations "${keep_days}d"
+  generation_policy="${keep_days}d"
 else
-  run nix-env --delete-generations +5
+  generation_policy="+5"
+fi
+
+run nix-env --delete-generations "$generation_policy"
+
+if [ -e /nix/var/nix/profiles/system ]; then
+  echo "#########################################################################"
+  echo "#   Prune System Generations"
+  run sudo nix-env --delete-generations "$generation_policy" \
+    --profile /nix/var/nix/profiles/system
 fi
 
 echo "#########################################################################"
 echo "#   Garbage Collection"
-run nix-collect-garbage -d
-
 if [ -e /nix/var/nix/profiles/system ]; then
-  run sudo nix-collect-garbage -d
+  run sudo nix-store --gc
+else
+  run nix-store --gc
 fi

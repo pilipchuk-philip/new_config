@@ -1,0 +1,33 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -ne 0 ]; then
+  echo "Usage: nix-repo" >&2
+  exit 1
+fi
+
+validate_repo() {
+  if [ ! -f "$1/flake.nix" ]; then
+    echo "Nix config repository has no flake.nix: $1" >&2
+    exit 1
+  fi
+}
+
+if [ -n "${NIX_CONFIG_REPO:-}" ]; then
+  validate_repo "$NIX_CONFIG_REPO"
+  cd -- "$NIX_CONFIG_REPO"
+  pwd
+  exit 0
+fi
+
+if git_root="$(git -C "$PWD" rev-parse --show-toplevel 2>/dev/null)" \
+  && [ -f "$git_root/flake.nix" ]; then
+  cd -- "$git_root"
+  pwd
+  exit 0
+fi
+
+default_repo="$HOME/new_config"
+validate_repo "$default_repo"
+cd -- "$default_repo"
+pwd

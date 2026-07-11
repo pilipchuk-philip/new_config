@@ -16,6 +16,11 @@ echo "#   Repo: ${repo_dir}"
 cd "${repo_dir}"
 
 echo "#########################################################################"
+echo "#   ShellCheck"
+shellcheck scripts/nix-target scripts/nix-repo scripts/nix-apply scripts/nix-check scripts/nix-clean \
+  scripts/nix-diff-lock scripts/nix-rollback scripts/nix-update
+
+echo "#########################################################################"
 echo "#   Flake"
 nix flake check --all-systems --no-build --no-write-lock-file
 

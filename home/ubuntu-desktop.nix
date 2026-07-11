@@ -15,5 +15,14 @@
     pkgs.ghostty
     pkgs.nerd-fonts.jetbrains-mono
     pkgs.ollama
+    pkgs.steam
+    pkgs.steam-run
+    pkgs.mangohud
+    pkgs.gamemode
+    pkgs.vkbasalt
+    pkgs.vulkan-tools
+    pkgs.mullvad-vpn
+    pkgs.tailscale
+    pkgs.tailscale-systray
   ];
 }

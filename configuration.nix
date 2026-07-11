@@ -10,10 +10,6 @@
       "nix-command"
       "flakes"
     ];
-    trusted-users = [
-      "root"
-      "q"
-    ];
     allowed-users = [ "q" ];
     sandbox = true;
     substituters = [ "https://cache.nixos.org" ];
@@ -104,7 +100,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    git
     google-chrome
     nvidia-vaapi-driver
     libva
@@ -113,13 +108,13 @@
     pciutils
     usbutils
     qt6.qtmultimedia
-    neovim
-    codex
   ];
 
   # Networking
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
+  services.tailscale.enable = true;
+  services.mullvad-vpn.enable = true;
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [ ];
@@ -221,7 +216,7 @@
     enable = true;
     allowReboot = false;
     dates = "daily";
-    flake = "/etc/nixos";
+    flake = "/home/q/new_config";
   };
   nix.gc = {
     automatic = true;

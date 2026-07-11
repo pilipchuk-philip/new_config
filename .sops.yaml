@@ -1,4 +1,0 @@
-creation_rules:
-  - path_regex: ^secrets/.*\.ya?ml$
-    age:
-      - age1replace_with_your_public_recipient

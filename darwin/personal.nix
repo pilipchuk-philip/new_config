@@ -7,9 +7,9 @@
   system.primaryUser = "q";
 
   homebrew.enable = true;
-  homebrew.onActivation.autoUpdate = true;
-  homebrew.onActivation.upgrade = true;
-  homebrew.onActivation.cleanup = "zap";
+  homebrew.onActivation.autoUpdate = false;
+  homebrew.onActivation.upgrade = false;
+  homebrew.onActivation.cleanup = "uninstall";
 
   homebrew.brews = [
     "postgresql@16"

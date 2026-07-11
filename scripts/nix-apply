@@ -20,41 +20,19 @@ run() {
 }
 
 unset CDPATH
-repo_dir="$(cd -- "$(dirname -- "$0")/.." && pwd)"
+repo_command="$(dirname -- "$0")/nix-repo"
+if [ ! -x "$repo_command" ]; then
+  repo_command="nix-repo"
+fi
+repo_dir="$($repo_command)"
 current_user="$(id -un)"
-apply_kind=""
-flake_attr=""
-
-case "$(uname -s)" in
-  Linux)
-    if command -v nixos-rebuild >/dev/null 2>&1; then
-      apply_kind="nixos"
-      flake_attr="nixos"
-    else
-      apply_kind="home-manager"
-      flake_attr="ubuntu-desktop"
-    fi
-    ;;
-  Darwin)
-    apply_kind="darwin"
-    case "$current_user" in
-      q)
-        flake_attr="mac"
-        ;;
-      ppy)
-        flake_attr="mac-work"
-        ;;
-      *)
-        echo "Unsupported Darwin user: ${current_user}"
-        exit 1
-        ;;
-    esac
-    ;;
-  *)
-    echo "Unsupported OS: $(uname -s)"
-    exit 1
-    ;;
-esac
+target_command="$(dirname -- "$0")/nix-target"
+if [ ! -x "$target_command" ]; then
+  target_command="nix-target"
+fi
+target="$($target_command)"
+apply_kind="${target%%:*}"
+flake_attr="${target#*:}"
 
 echo "#########################################################################"
 echo "#   Nix Apply"
