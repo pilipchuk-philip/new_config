@@ -14,5 +14,6 @@
     pkgs.codex
     pkgs.ghostty
     pkgs.nerd-fonts.jetbrains-mono
+    pkgs.ollama
   ];
 }
