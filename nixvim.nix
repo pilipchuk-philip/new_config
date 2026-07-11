@@ -21,6 +21,14 @@ let
       sha256 = "1hs7hhvm0v2idh5gazg5jy2qymjz4jpaba8rlh6s5z4idacpi4s7";
     };
   };
+  nvimLint = pkgs.vimPlugins.nvim-lint.overrideAttrs (_old: {
+    src = pkgs.fetchFromGitHub {
+      owner = "mfussenegger";
+      repo = "nvim-lint";
+      rev = "a219b2c9e5b4765e5c845aba119dad55806fcaf1";
+      sha256 = "05fk4rybn4b4ffnq0xpk54l81q7dz3f9dpj2zh9i0wv46k6n2054";
+    };
+  });
   treesitterWithParsers = pkgs.vimPlugins.nvim-treesitter.withPlugins (p: [
     p.c
     p.css
@@ -52,6 +60,7 @@ in
     defaultEditor = true;
     vimAlias = true;
     viAlias = true;
+    enableMan = false;
 
     extraPlugins = with pkgs.vimPlugins; [
       actions-preview-nvim
@@ -78,7 +87,7 @@ in
       mini-nvim
       nvim-autopairs
       nvim-cmp
-      nvim-lint
+      nvimLint
       nvim-lspconfig
       treesitterWithParsers
       nvim-web-devicons
