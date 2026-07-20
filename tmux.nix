@@ -74,6 +74,7 @@ in
       sensible
       vim-tmux-navigator
       yank
+      resurrect
       cpu
       battery
       tmuxPowerZoom
@@ -129,6 +130,12 @@ in
 
       unbind-key C-/
       unbind-key C-_
+
+      # Smooth wheel scrolling: 1 line per tick (default is ~5).
+      bind-key -T root         WheelUpPane   if-shell -F -t = "#{?pane_in_mode,1,#{alternate_on}}" "send-keys -M" "copy-mode -e ; send-keys -N1 -X scroll-up"
+      bind-key -T root         WheelDownPane if-shell -F -t = "#{?pane_in_mode,1,#{alternate_on}}" "send-keys -M" "send-keys -N1 -X scroll-down"
+      bind-key -T copy-mode-vi WheelUpPane   send-keys -N1 -X scroll-up
+      bind-key -T copy-mode-vi WheelDownPane send-keys -N1 -X scroll-down
     '';
   };
 }

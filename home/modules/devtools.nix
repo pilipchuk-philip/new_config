@@ -7,6 +7,10 @@
 
 let
   localScripts = import ../../pkgs/scripts.nix { inherit pkgs; };
+  catppuccinDelta = pkgs.fetchurl {
+    url = "https://raw.githubusercontent.com/catppuccin/delta/main/catppuccin.gitconfig";
+    sha256 = "0mdlccyzjzlidiwilbd1fi233v5bmfi1cldj32vnfdqydgd0ln7h";
+  };
 in
 {
   programs.direnv = {
@@ -23,11 +27,21 @@ in
 
   programs.git = {
     enable = true;
+    includes = [ { path = "${catppuccinDelta}"; } ];
     settings = {
       alias = {
         lg = "log --graph --decorate --pretty=format:'%C(auto)%h %C(bold blue)%an%Creset %C(auto)%d %s'";
         gs = "status";
       };
+    };
+  };
+
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+    options = {
+      features = "catppuccin-mocha";
+      side-by-side = true;
     };
   };
 

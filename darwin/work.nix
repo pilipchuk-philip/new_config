@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   imports = [ ./common.nix ];
@@ -9,5 +9,10 @@
   users.users.ppy = {
     home = "/Users/ppy";
     shell = pkgs.zsh;
+  };
+
+  system.keyboard = {
+    remapCapsLockToEscape = lib.mkForce false;
+    remapCapsLockToControl = true;
   };
 }
