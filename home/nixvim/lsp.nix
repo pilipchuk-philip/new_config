@@ -52,5 +52,27 @@
     for server, cfg in pairs(servers) do
       setup_server(server, cfg)
     end
+
+    -- Глобальный фильтр LSP-диагностик по подстроке в сообщении.
+    -- Добавляй новые паттерны в ignored_diagnostic_patterns.
+    local ignored_diagnostic_patterns = {
+      "union syntax cannot be used with string operand",
+    }
+
+    local orig_handler = vim.lsp.handlers["textDocument/publishDiagnostics"]
+    vim.lsp.handlers["textDocument/publishDiagnostics"] = function(err, result, ctx, config)
+      if result and result.diagnostics then
+        result.diagnostics = vim.tbl_filter(function(d)
+          local msg = (d.message or ""):lower()
+          for _, pat in ipairs(ignored_diagnostic_patterns) do
+            if msg:find(pat, 1, true) then
+              return false
+            end
+          end
+          return true
+        end, result.diagnostics)
+      end
+      return orig_handler(err, result, ctx, config)
+    end
   '';
 }

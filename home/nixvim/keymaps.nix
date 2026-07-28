@@ -18,7 +18,7 @@
     keymap("i", "<C-f>", function()
       require("telescope").extensions.live_grep_args.live_grep_args()
     end, { desc = "Live Grep Args" })
-    keymap("v", "<C-f>", function()
+    keymap("x", "<C-f>", function()
       local text = vim.getVisualSelection()
       require("telescope").extensions.live_grep_args.live_grep_args({ default_text = text })
     end, { desc = "Live Grep Args Selection" })
@@ -40,7 +40,7 @@
     end
     keymap("n", "ff", ":lua ToggleFoldMethod() <CR>", { silent = true })
 
-    keymap({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
+    keymap({ "n", "x" }, "<Space>", "<Nop>", { silent = true })
     keymap("n", ";", ":", { silent = true })
     keymap("n", "<C-a>", "gg<S-v>G")
     keymap("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
@@ -54,7 +54,7 @@
     keymap("n", "sk", "<C-w>k", { silent = true })
     keymap("n", "sj", "<C-w>j", { silent = true })
     keymap("x", "p", '"_dP', { noremap = true, silent = true })
-    keymap("n", "<C-w>", ":bd<CR>", { silent = true })
+    keymap("n", "<leader>bd", ":bd<CR>", { silent = true, desc = "Delete buffer" })
 
     if vim.loop.os_uname().sysname == "Darwin" then
       keymap("n", "<C-/>", "<Plug>kommentary_line_default<CR>")
@@ -77,8 +77,8 @@
     end
 
     keymap("n", "gs", ":vsplit | lua vim.lsp.buf.definition()<CR>", { silent = true })
-    keymap({ "n", "v" }, "<leader>ca", ":lua require('actions-preview').code_actions()<CR>")
-    keymap({ "n", "v" }, "<leader>gl", ":lua require('custom.github-helper').main()<CR>")
+    keymap({ "n", "x" }, "<leader>ca", ":lua require('actions-preview').code_actions()<CR>")
+    keymap({ "n", "x" }, "<leader>gh", ":lua require('custom.github-helper').main()<CR>")
     keymap("n", "<leader>b", ":lua require('custom.bookmarks-picker').open()<CR>", { silent = true })
     keymap("n", "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>")
     keymap("n", "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>")

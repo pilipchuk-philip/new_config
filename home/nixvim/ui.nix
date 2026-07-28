@@ -175,15 +175,6 @@
         },
       })
 
-      local ts_ok, ts_configs = pcall(require, "nvim-treesitter.configs")
-      if ts_ok then
-        ts_configs.setup({
-          auto_install = false,
-          highlight = { enable = true },
-          indent = { enable = true },
-        })
-      end
-
       local lga_actions = require("telescope-live-grep-args.actions")
       require("telescope").setup({
         defaults = {
