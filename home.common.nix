@@ -6,7 +6,7 @@
     ./home/modules/devtools.nix
     ./home/modules/terminal.nix
     ./nixvim.nix
-    ./vscode.nix
+    # ./vscode.nix # Temporarily disabled for all hosts.
     ./tmux.nix
   ];
 
