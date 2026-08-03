@@ -14,10 +14,10 @@ let
   };
   tmuxWeatherCached = pkgs.writeShellApplication {
     name = "tmux-weather-cached";
-    runtimeInputs = with pkgs; [
-      coreutils
-      curl
-      gnused
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.curl
+      pkgs.gnused
     ];
     text = ''
       location="''${TMUX_WEATHER_LOCATION:-Copenhagen}"
@@ -70,13 +70,13 @@ in
     mouse = true;
     keyMode = "vi";
 
-    plugins = with pkgs.tmuxPlugins; [
-      sensible
-      vim-tmux-navigator
-      yank
-      resurrect
-      cpu
-      battery
+    plugins = [
+      pkgs.tmuxPlugins.sensible
+      pkgs.tmuxPlugins.vim-tmux-navigator
+      pkgs.tmuxPlugins.yank
+      pkgs.tmuxPlugins.resurrect
+      pkgs.tmuxPlugins.cpu
+      pkgs.tmuxPlugins.battery
       tmuxPowerZoom
     ];
 

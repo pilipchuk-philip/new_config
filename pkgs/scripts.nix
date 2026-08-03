@@ -3,14 +3,14 @@
 let
   targetDetector = pkgs.writeShellApplication {
     name = "nix-target";
-    runtimeInputs = with pkgs; [ coreutils ];
+    runtimeInputs = [ pkgs.coreutils ];
     text = builtins.readFile ../scripts/nix-target;
   };
   repoResolver = pkgs.writeShellApplication {
     name = "nix-repo";
-    runtimeInputs = with pkgs; [
-      coreutils
-      git
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.git
     ];
     text = builtins.readFile ../scripts/nix-repo;
   };
@@ -20,9 +20,9 @@ in
   repoResolver
   (pkgs.writeShellApplication {
     name = "nix-apply";
-    runtimeInputs = with pkgs; [
-      nix
-      coreutils
+    runtimeInputs = [
+      pkgs.nix
+      pkgs.coreutils
       targetDetector
       repoResolver
     ];
@@ -31,51 +31,53 @@ in
 
   (pkgs.writeShellApplication {
     name = "nix-check";
-    runtimeInputs = with pkgs; [
-      nix
-      coreutils
-      git
-      ripgrep
-      shellcheck
-    ];
+    runtimeInputs = builtins.attrValues {
+      inherit (pkgs)
+        nix
+        coreutils
+        git
+        ripgrep
+        shellcheck
+        ;
+    };
     text = builtins.readFile ../scripts/nix-check;
   })
 
   (pkgs.writeShellApplication {
     name = "nix-clean";
-    runtimeInputs = with pkgs; [
-      nix
-      home-manager
-      coreutils
+    runtimeInputs = [
+      pkgs.nix
+      pkgs.home-manager
+      pkgs.coreutils
     ];
     text = builtins.readFile ../scripts/nix-clean;
   })
 
   (pkgs.writeShellApplication {
     name = "nix-diff-lock";
-    runtimeInputs = with pkgs; [
-      nix
-      coreutils
-      diffutils
+    runtimeInputs = [
+      pkgs.nix
+      pkgs.coreutils
+      pkgs.diffutils
     ];
     text = builtins.readFile ../scripts/nix-diff-lock;
   })
 
   (pkgs.writeShellApplication {
     name = "nix-rollback";
-    runtimeInputs = with pkgs; [
-      nix
-      home-manager
-      coreutils
+    runtimeInputs = [
+      pkgs.nix
+      pkgs.home-manager
+      pkgs.coreutils
     ];
     text = builtins.readFile ../scripts/nix-rollback;
   })
 
   (pkgs.writeShellApplication {
     name = "nix-update";
-    runtimeInputs = with pkgs; [
-      nix
-      coreutils
+    runtimeInputs = [
+      pkgs.nix
+      pkgs.coreutils
       targetDetector
       repoResolver
     ];

@@ -36,30 +36,30 @@ let
 in
 {
   programs.vscode.profiles.default.extensions =
-    (with pkgs.vscode-extensions; [
-      alefragnani.bookmarks
-      charliermarsh.ruff
-      github.copilot
-      github.copilot-chat
-      github.github-vscode-theme
-      gruntfuggly.todo-tree
-      jnoortheen.nix-ide
-      ms-azuretools.vscode-containers
-      ms-python.debugpy
-      ms-python.python
-      ms-python.vscode-pylance
-      ms-toolsai.jupyter
-      ms-toolsai.jupyter-keymap
-      ms-toolsai.jupyter-renderers
-      ms-toolsai.vscode-jupyter-cell-tags
-      ms-toolsai.vscode-jupyter-slideshow
-      ms-vscode-remote.remote-containers
-      ms-vscode-remote.remote-ssh
-      ms-vscode-remote.remote-ssh-edit
-      ms-vscode.remote-explorer
-      pkief.material-icon-theme
-      usernamehw.errorlens
-      vscodevim.vim
-    ])
+    [
+      pkgs.vscode-extensions.alefragnani.bookmarks
+      pkgs.vscode-extensions.charliermarsh.ruff
+      pkgs.vscode-extensions.github.copilot
+      pkgs.vscode-extensions.github.copilot-chat
+      pkgs.vscode-extensions.github.github-vscode-theme
+      pkgs.vscode-extensions.gruntfuggly.todo-tree
+      pkgs.vscode-extensions.jnoortheen.nix-ide
+      pkgs.vscode-extensions.ms-azuretools.vscode-containers
+      pkgs.vscode-extensions.ms-python.debugpy
+      pkgs.vscode-extensions.ms-python.python
+      pkgs.vscode-extensions.ms-python.vscode-pylance
+      pkgs.vscode-extensions.ms-toolsai.jupyter
+      pkgs.vscode-extensions.ms-toolsai.jupyter-keymap
+      pkgs.vscode-extensions.ms-toolsai.jupyter-renderers
+      pkgs.vscode-extensions.ms-toolsai.vscode-jupyter-cell-tags
+      pkgs.vscode-extensions.ms-toolsai.vscode-jupyter-slideshow
+      pkgs.vscode-extensions.ms-vscode-remote.remote-containers
+      pkgs.vscode-extensions.ms-vscode-remote.remote-ssh
+      pkgs.vscode-extensions.ms-vscode-remote.remote-ssh-edit
+      pkgs.vscode-extensions.ms-vscode.remote-explorer
+      pkgs.vscode-extensions.pkief.material-icon-theme
+      pkgs.vscode-extensions.usernamehw.errorlens
+      pkgs.vscode-extensions.vscodevim.vim
+    ]
     ++ marketplaceExtensions;
 }

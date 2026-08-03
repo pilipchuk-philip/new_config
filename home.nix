@@ -13,15 +13,20 @@
     email = "pilipchuk.philip@gmail.com";
   };
 
-  home.packages = with pkgs; [
-    kdePackages.francis
-    thunderbird-bin
-    unrar
-    signal-desktop
-    telegram-desktop
-    spotify
-    # clipboard helpers (на Wayland/X11)
-    wl-clipboard
-    xclip
-  ];
+  home.packages =
+    (builtins.attrValues {
+      inherit (pkgs)
+        thunderbird-bin
+        unrar
+        signal-desktop
+        telegram-desktop
+        spotify
+        # clipboard helpers (на Wayland/X11)
+        wl-clipboard
+        xclip
+        ;
+    })
+    ++ [
+      pkgs.kdePackages.francis
+    ];
 }

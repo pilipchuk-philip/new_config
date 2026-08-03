@@ -46,56 +46,59 @@ in
   };
 
   home.packages =
-    with pkgs;
-    (lib.optionals stdenv.isLinux [
-      cifs-utils
-    ])
+    lib.optionals pkgs.stdenv.isLinux [
+      pkgs.cifs-utils
+    ]
+    ++ (builtins.attrValues {
+      inherit (pkgs)
+        git
+        ripgrep
+        fd
+        lsd
+        unzip
+        wget
+        zip
+        tmux
+        btop
+        fzf
+        lazygit
+        age
+        sops
+        luajit
+        rsync
+        tree-sitter
+        uv
+
+        # LSP servers
+        lua-language-server
+        pyright
+        typescript-language-server
+        bash-language-server
+        vscode-langservers-extracted
+        yaml-language-server
+        dockerfile-language-server
+        nil
+        sqls
+        marksman
+
+        # format-on-save tools
+        nixfmt
+        ruff
+        prettier
+        shfmt
+        goimports-reviser
+        vale
+        mypy
+        imagemagick
+        ghostscript
+        mermaid-cli
+        gh
+        lynx
+        ;
+    })
     ++ [
-      git
-      ripgrep
-      fd
-      lsd
-      unzip
-      wget
-      zip
-      tmux
-      btop
-      fzf
-      lazygit
-      age
-      sops
-      luajit
-      rsync
-      tree-sitter
-      uv
-
-      # LSP servers
-      lua-language-server
-      pyright
-      typescript-language-server
-      bash-language-server
-      vscode-langservers-extracted
-      yaml-language-server
-      dockerfile-language-server
-      nil
-      sqls
-      llvmPackages.clang-tools
-      marksman
-
-      # format-on-save tools
-      nixfmt
-      ruff
-      prettier
-      shfmt
-      goimports-reviser
-      vale
-      valeStyles.proselint
-      mypy
-      imagemagick
-      ghostscript
-      mermaid-cli
-      gh
-      lynx
+      pkgs.llvmPackages.clang-tools
+      pkgs.valeStyles.proselint
     ]
     ++ localScripts;
 

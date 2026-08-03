@@ -58,58 +58,63 @@ in
   nixpkgs.config.allowUnfree = true;
 
   programs.nixvim = {
-    extraPlugins = with pkgs.vimPlugins; [
-      actions-preview-nvim
-      barbar-nvim
-      catppuccin-nvim
-      cmp-buffer
-      cmp-cmdline
-      cmp-nvim-lsp
-      cmp-path
-      cmp-snippy
-      cmp-under-comparator
-      copilot-cmp
-      copilot-lua
-      kommentary
-      nvim-snippy
-      formatOnSave
-      gitsigns-nvim
-      hover-nvim
-      inc-rename-nvim
-      lualine-nvim
-      lspkind-nvim
-      lsp-progress-nvim
-      mini-icons
-      mini-nvim
-      nvim-autopairs
-      nvim-cmp
-      nvimLint
-      nvim-lspconfig
-      treesitterWithParsers
-      nvim-web-devicons
-      plenary-nvim
-      render-markdown-nvim
-      snacks-nvim
-      sqlite-lua
-      telescope-live-grep-args-nvim
-      telescope-nvim
-      tiny-inline-diagnostic-nvim
-      todo-comments-nvim
-      transparent-nvim
-      vim-bookmarks
-      which-key-nvim
-      vim-dadbod
-      vim-dadbod-completion
-      vim-dadbod-ui
-      vim-fugitive
-      vim-illuminate
-      vimPluginRuscmd
-      vim-sleuth
-      vim-tmux-navigator
-      wilder-nvim
-      dropbar-nvim
-      smartPaste
-    ];
+    extraPlugins =
+      (builtins.attrValues {
+        inherit (pkgs.vimPlugins)
+          actions-preview-nvim
+          barbar-nvim
+          catppuccin-nvim
+          cmp-buffer
+          cmp-cmdline
+          cmp-nvim-lsp
+          cmp-path
+          cmp-snippy
+          cmp-under-comparator
+          copilot-cmp
+          copilot-lua
+          kommentary
+          nvim-snippy
+          gitsigns-nvim
+          hover-nvim
+          inc-rename-nvim
+          lualine-nvim
+          lspkind-nvim
+          lsp-progress-nvim
+          mini-icons
+          mini-nvim
+          nvim-autopairs
+          nvim-cmp
+          nvim-lspconfig
+          nvim-web-devicons
+          plenary-nvim
+          render-markdown-nvim
+          snacks-nvim
+          sqlite-lua
+          telescope-live-grep-args-nvim
+          telescope-nvim
+          tiny-inline-diagnostic-nvim
+          todo-comments-nvim
+          transparent-nvim
+          vim-bookmarks
+          which-key-nvim
+          vim-dadbod
+          vim-dadbod-completion
+          vim-dadbod-ui
+          vim-fugitive
+          vim-illuminate
+          vim-sleuth
+          vim-tmux-navigator
+          wilder-nvim
+          dropbar-nvim
+          ;
+      })
+      ++ [
+        formatOnSave
+        nvimLint
+        treesitterWithParsers
+        vimPluginRuscmd
+        smartPaste
+      ];
 
     extraFiles = {
       "lua/custom/bookmarks-picker.lua".text = builtins.readFile ../../vendor/bookmarks-picker.lua;

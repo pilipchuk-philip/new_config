@@ -99,16 +99,21 @@
     __GL_MaxFramesAllowed = "1";
   };
 
-  environment.systemPackages = with pkgs; [
-    google-chrome
-    nvidia-vaapi-driver
-    libva
-    libva-utils
-    mesa-demos
-    pciutils
-    usbutils
-    qt6.qtmultimedia
-  ];
+  environment.systemPackages =
+    (builtins.attrValues {
+      inherit (pkgs)
+        google-chrome
+        nvidia-vaapi-driver
+        libva
+        libva-utils
+        mesa-demos
+        pciutils
+        usbutils
+        ;
+    })
+    ++ [
+      pkgs.qt6.qtmultimedia
+    ];
 
   # Networking
   networking.hostName = "nixos";
@@ -145,9 +150,7 @@
       "wheel"
       "video"
     ];
-    packages = with pkgs; [
-      xed-editor
-    ];
+    packages = [ pkgs.xed-editor ];
   };
 
   users.users.root = {
@@ -155,9 +158,9 @@
   };
 
   # Font
-  fonts.packages = with pkgs; [
-    jetbrains-mono
-    nerd-fonts.jetbrains-mono
+  fonts.packages = [
+    pkgs.jetbrains-mono
+    pkgs.nerd-fonts.jetbrains-mono
   ];
 
   # Programs
