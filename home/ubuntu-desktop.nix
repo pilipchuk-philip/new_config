@@ -12,6 +12,7 @@
     # pkgs._1password-cli
     # pkgs._1password-gui
     pkgs.codex
+    pkgs.claude-code
     pkgs.ghostty
     pkgs.nerd-fonts.jetbrains-mono
     pkgs.ollama

@@ -19,6 +19,7 @@
   homebrew.casks = [
     "ghostty"
     "codex"
+    "claude-code"
   ];
 
   users.users.q = {
