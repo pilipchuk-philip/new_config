@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# gdp — git diff pretty (через delta с side-by-side)
+#
+# Примеры:
+#   gdp                       # unstaged изменения
+#   gdp HEAD                  # всё против HEAD (включая staged)
+#   gdp --staged              # staged изменения
+#   gdp main                  # против ветки main
+#   gdp origin/main..HEAD     # диапазон коммитов
+#   gdp <sha1> <sha2>         # два коммита
+set -euo pipefail
+
+git diff "$@" | delta --side-by-side --features=catppuccin-mocha

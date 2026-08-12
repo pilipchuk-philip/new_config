@@ -74,6 +74,15 @@ in
   })
 
   (pkgs.writeShellApplication {
+    name = "gdp";
+    runtimeInputs = [
+      pkgs.git
+      pkgs.delta
+    ];
+    text = builtins.readFile ../scripts/gdp;
+  })
+
+  (pkgs.writeShellApplication {
     name = "nix-update";
     runtimeInputs = [
       pkgs.nix

@@ -38,7 +38,7 @@ in
 
   programs.delta = {
     enable = true;
-    enableGitIntegration = true;
+    enableGitIntegration = false;
     options = {
       features = "catppuccin-mocha";
       side-by-side = true;
@@ -94,6 +94,7 @@ in
         mermaid-cli
         gh
         lynx
+        opencode
         ;
     })
     ++ [
