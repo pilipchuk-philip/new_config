@@ -290,7 +290,43 @@
       vim.keymap.set("n", "<leader>gll", function() Snacks.picker.git_log() end, { desc = "Git Log" })
       vim.keymap.set("n", "<leader>gL", function() Snacks.picker.git_log_line() end, { desc = "Git Log Line" })
       vim.keymap.set("n", "<leader>gs", function() Snacks.picker.git_status() end, { desc = "Git Status" })
-      vim.keymap.set("n", "<C-g>", function() Snacks.picker.git_status() end, { desc = "Git Status" })
+      vim.keymap.set("n", "<C-g>", function()
+        local base = "master"
+        if vim.fn.systemlist("git rev-parse --verify --quiet " .. base)[1] == nil
+           or vim.v.shell_error ~= 0 then
+          base = "main"
+        end
+        local merge_base = vim.fn.systemlist("git merge-base HEAD " .. base)[1] or base
+        Snacks.picker.pick({
+          source = "git_diff_" .. base,
+          title = "Git Diff vs " .. base,
+          finder = function()
+            local files = vim.fn.systemlist("git diff --name-only " .. merge_base)
+            local items = {}
+            for _, f in ipairs(files) do
+              if f ~= "" then
+                table.insert(items, { text = f, file = f })
+              end
+            end
+            return items
+          end,
+          format = "file",
+          preview = function(ctx)
+            local file = ctx.item.file
+            local diff = vim.fn.systemlist(
+              "git diff " .. merge_base .. " -- " .. vim.fn.shellescape(file)
+            )
+            ctx.preview:set_lines(diff)
+            ctx.preview:highlight({ ft = "diff" })
+          end,
+          confirm = function(picker, item)
+            picker:close()
+            if item and item.file then
+              vim.cmd("edit " .. vim.fn.fnameescape(item.file))
+            end
+          end,
+        })
+      end, { desc = "Git Diff vs master" })
       vim.keymap.set("n", "<leader>gd", function() Snacks.picker.git_diff() end, { desc = "Git Diff (Hunks)" })
       vim.keymap.set("n", "<leader>gf", function() Snacks.picker.git_log_file() end, { desc = "Git Log File" })
       vim.keymap.set("n", "<leader>s/", function() Snacks.picker.search_history() end, { desc = "Search History" })

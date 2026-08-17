@@ -13,17 +13,15 @@ let
     };
   };
 
-  tmuxAgentSidebarSrc = pkgs.fetchFromGitHub {
-    owner = "hiroppy";
-    repo = "tmux-agent-sidebar";
-    rev = "v0.13.0";
-    hash = "sha256-NiqLgMvWbSW3M80ZUWdmmm2VkVqy8eTGcPkrOCsaasI=";
-  };
-
   tmuxAgentSidebarBin = pkgs.rustPlatform.buildRustPackage {
     pname = "tmux-agent-sidebar";
     version = "0.13.0";
-    src = tmuxAgentSidebarSrc;
+    src = pkgs.fetchFromGitHub {
+      owner = "hiroppy";
+      repo = "tmux-agent-sidebar";
+      rev = "v0.13.0";
+      hash = "sha256-NiqLgMvWbSW3M80ZUWdmmm2VkVqy8eTGcPkrOCsaasI=";
+    };
     cargoHash = "sha256-mOEs2J1o9VeVOXY55r8O52TqoM2GuYU3tVoh5h+yH0s=";
     doCheck = false;
     buildInputs = lib.optionals pkgs.stdenv.isLinux [
@@ -35,7 +33,12 @@ let
     pluginName = "tmux-agent-sidebar";
     rtpFilePath = "tmux-agent-sidebar.tmux";
     version = "0.13.0";
-    src = tmuxAgentSidebarSrc;
+    src = pkgs.fetchFromGitHub {
+      owner = "hiroppy";
+      repo = "tmux-agent-sidebar";
+      rev = "v0.13.0";
+      hash = "sha256-NiqLgMvWbSW3M80ZUWdmmm2VkVqy8eTGcPkrOCsaasI=";
+    };
     postInstall = ''
       mkdir -p $target/bin
       ln -sf ${tmuxAgentSidebarBin}/bin/tmux-agent-sidebar $target/bin/tmux-agent-sidebar
