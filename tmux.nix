@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 
 let
   tmuxPowerZoom = pkgs.tmuxPlugins.mkTmuxPlugin {
@@ -11,38 +11,6 @@ let
       rev = "v1.0.0";
       sha256 = "020km8zlfj8jhlg6xn65syn75z9xyyl2gnlgrhx96b1rl2rq8nfc";
     };
-  };
-
-  tmuxAgentSidebarBin = pkgs.rustPlatform.buildRustPackage {
-    pname = "tmux-agent-sidebar";
-    version = "0.13.0";
-    src = pkgs.fetchFromGitHub {
-      owner = "hiroppy";
-      repo = "tmux-agent-sidebar";
-      rev = "v0.13.0";
-      hash = "sha256-NiqLgMvWbSW3M80ZUWdmmm2VkVqy8eTGcPkrOCsaasI=";
-    };
-    cargoHash = "sha256-mOEs2J1o9VeVOXY55r8O52TqoM2GuYU3tVoh5h+yH0s=";
-    doCheck = false;
-    buildInputs = lib.optionals pkgs.stdenv.isLinux [
-      pkgs.xorg.libxcb
-    ];
-  };
-
-  tmuxAgentSidebar = pkgs.tmuxPlugins.mkTmuxPlugin {
-    pluginName = "tmux-agent-sidebar";
-    rtpFilePath = "tmux-agent-sidebar.tmux";
-    version = "0.13.0";
-    src = pkgs.fetchFromGitHub {
-      owner = "hiroppy";
-      repo = "tmux-agent-sidebar";
-      rev = "v0.13.0";
-      hash = "sha256-NiqLgMvWbSW3M80ZUWdmmm2VkVqy8eTGcPkrOCsaasI=";
-    };
-    postInstall = ''
-      mkdir -p $target/bin
-      ln -sf ${tmuxAgentSidebarBin}/bin/tmux-agent-sidebar $target/bin/tmux-agent-sidebar
-    '';
   };
   tmuxWeatherCached = pkgs.writeShellApplication {
     name = "tmux-weather-cached";
@@ -97,15 +65,6 @@ let
   };
 in
 {
-  # Expose the sidebar binary in user PATH so the opencode plugin's
-  # fallback (`spawn("tmux-agent-sidebar", ["hook", "opencode", …])`)
-  # actually resolves. Without it hooks are silently swallowed and the
-  # sidebar never learns about opencode panes.
-  home.packages = [ tmuxAgentSidebarBin ];
-
-  xdg.configFile."opencode/plugins/tmux-agent-sidebar.js".source =
-    "${tmuxAgentSidebar.rtp}/.opencode/plugins/tmux-agent-sidebar.js";
-
   programs.tmux = {
     enable = true;
     mouse = true;
@@ -119,7 +78,6 @@ in
       pkgs.tmuxPlugins.cpu
       pkgs.tmuxPlugins.battery
       tmuxPowerZoom
-      tmuxAgentSidebar
     ];
 
     extraConfig = ''
@@ -140,6 +98,7 @@ in
       set -g status on
       set -g status-style bg=#1E1E2E,fg=white
       set -g status-left "#[bg=black,fg=white] 󰌢 #S #[bg=black,fg=white] "
+      set -g status-left-length 200
       set -g status-right "#[fg=blue]  #{cpu_percentage}  #{battery_percentage} #[fg=yellow] CPH:#(${tmuxWeatherCached}/bin/tmux-weather-cached)   %Y-%m-%d #[fg=green]  %H:%M #[default]"
       setw -g window-status-format " #I:#W "
       setw -g window-status-current-format "#[fg=black,bg=#87afff] #I:#W #[default]"

@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+session="home"
+
+window_exists() {
+  local name="$1"
+
+  [[ -n "$(tmux list-windows -t "=$session" -f "#{==:#{window_name},$name}" -F '#{window_name}')" ]]
+}
+
+create_window() {
+  local name="$1"
+
+  window_exists "$name" && return
+
+  tmux new-window -d -t "$session:" -n "$name"
+}
+
+run_in_shell() {
+  local name="$1"
+  local command="$2"
+  local pane_command
+
+  pane_command="$(tmux display-message -p -t "$session:$name" '#{pane_current_command}')"
+  case "$pane_command" in
+    bash | dash | fish | ksh | sh | zsh)
+      tmux send-keys -t "$session:$name" -l "$command"
+      tmux send-keys -t "$session:$name" Enter
+      ;;
+  esac
+}
+
+if ! tmux has-session -t "=$session" 2> /dev/null; then
+  tmux new-session -d -s "$session" -n main
+fi
+
+# Передаём новым окнам PATH клиента, не сохраняя зависимости команды inf.
+tmux set-environment -g PATH "$PATH"
+
+# Создаём недостающие окна в нужном порядке. main остаётся пустым.
+create_window main
+create_window tower
+create_window router
+create_window pve
+create_window pve-worker-1
+create_window pve-worker-2
+
+# Удаляем окна из предыдущих версий скрипта.
+if window_exists system; then
+  tmux kill-window -t "$session:system"
+fi
+if window_exists nas; then
+  tmux kill-window -t "$session:nas"
+fi
+
+# Предыдущая версия запускала SSH в main; теперь это окно должно быть пустым.
+if [[ "$(tmux display-message -p -t "$session:main" '#{pane_current_command}')" == ssh ]]; then
+  tmux respawn-pane -k -t "$session:main"
+fi
+
+run_in_shell tower "ssh root@tower"
+run_in_shell router "ssh root@router"
+
+# Подключаемся к сессии.
+tmux attach-session -t "$session"

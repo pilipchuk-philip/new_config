@@ -41,6 +41,16 @@ in
       export POWERLEVEL9K_CONFIG_FILE=${config.xdg.configHome}/p10k.zsh
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
       source ${config.xdg.configHome}/p10k.zsh
+
+      tmux() {
+        if (( $# == 0 )); then
+          local session_name="''${PWD:t}"
+          [[ -n "$session_name" ]] || session_name="root"
+          command tmux new-session -A -s "$session_name"
+        else
+          command tmux "$@"
+        fi
+      }
     '';
     syntaxHighlighting.enable = true;
   };

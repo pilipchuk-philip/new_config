@@ -83,6 +83,12 @@ in
   })
 
   (pkgs.writeShellApplication {
+    name = "inf";
+    runtimeInputs = [ pkgs.tmux ];
+    text = builtins.readFile ../scripts/home;
+  })
+
+  (pkgs.writeShellApplication {
     name = "nix-update";
     runtimeInputs = [
       pkgs.nix

@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   imports = [ ./common.nix ];
@@ -20,10 +20,16 @@
     "ghostty"
     "codex"
     "claude-code"
+    "iptvnator"
   ];
 
   users.users.q = {
     home = "/Users/q";
     shell = pkgs.zsh;
+  };
+
+  system.keyboard = {
+    remapCapsLockToEscape = lib.mkForce false;
+    remapCapsLockToControl = true;
   };
 }
