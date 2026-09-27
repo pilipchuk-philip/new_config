@@ -39,4 +39,26 @@
     pkgs.tailscale
     pkgs.tailscale-systray
   ];
+
+  # Ghostty advertises D-Bus activation, but its package does not provide the
+  # systemd user unit expected by GNOME. Override the launcher so GNOME runs
+  # the executable directly instead of failing on the missing unit.
+  xdg.dataFile."applications/com.mitchellh.ghostty.desktop".text = ''
+    [Desktop Entry]
+    Version=1.0
+    Name=Ghostty
+    GenericName=Terminal Emulator
+    Type=Application
+    Comment=A terminal emulator
+    TryExec=${pkgs.ghostty}/bin/ghostty
+    Exec=${pkgs.ghostty}/bin/ghostty --gtk-single-instance=true
+    Icon=com.mitchellh.ghostty
+    Categories=System;TerminalEmulator;
+    Keywords=terminal;tty;pty;
+    StartupNotify=true
+    StartupWMClass=com.mitchellh.ghostty
+    Terminal=false
+    DBusActivatable=false
+    X-GNOME-UsesNotifications=true
+  '';
 }
