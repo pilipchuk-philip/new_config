@@ -65,7 +65,7 @@
     xkb = {
       layout = "us,ru";
       variant = "";
-      options = "grp:alt_space_toggle,caps:escape";
+      options = "grp:alt_space_toggle,ctrl:nocaps";
     };
   };
 

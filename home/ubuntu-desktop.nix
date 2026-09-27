@@ -21,6 +21,11 @@
   home.username = "q";
   home.homeDirectory = "/home/q";
 
+  dconf.settings."org/gnome/desktop/input-sources".xkb-options = [
+    "grp_led:scroll"
+    "ctrl:nocaps"
+  ];
+
   home.packages = [
     # pkgs._1password-cli
     # pkgs._1password-gui
