@@ -63,7 +63,7 @@ in
         inherit (pkgs.vimPlugins)
           actions-preview-nvim
           barbar-nvim
-          catppuccin-nvim
+          nightfox-nvim
           cmp-buffer
           cmp-cmdline
           cmp-nvim-lsp

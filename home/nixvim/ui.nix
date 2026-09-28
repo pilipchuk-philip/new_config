@@ -27,36 +27,23 @@
         autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
       ]]
 
-      require("catppuccin").setup({
-        flavour = "mocha",
-        background = { light = "latte", dark = "mocha" },
-        transparent_background = false,
-        show_end_of_buffer = false,
-        term_colors = false,
-        dim_inactive = { enabled = false, shade = "dark", percentage = 0.15 },
-        no_italic = false,
-        no_bold = false,
-        no_underline = false,
-        styles = {
-          comments = { "italic" },
-          conditionals = { "italic" },
-        },
-        integrations = {
-          cmp = true,
-          gitsigns = true,
-          nvimtree = true,
-          treesitter = true,
-          notify = false,
-          mini = { enabled = true, indentscope_color = "" },
+      require("nightfox").setup({
+        options = {
+          transparent = false,
+          dim_inactive = false,
+          styles = {
+            comments = "italic",
+            conditionals = "italic",
+          },
         },
       })
-      vim.cmd.colorscheme("catppuccin")
+      vim.cmd.colorscheme("carbonfox")
       vim.cmd('highlight Visual cterm=NONE ctermbg=White ctermfg=Black guibg=White guifg=Black')
 
       require("lualine").setup {
         options = {
           icons_enabled = true,
-          theme = "catppuccin",
+          theme = require("nightfox.util.lualine")("carbonfox"),
           component_separators = { left = ")", right = "(" },
           section_separators = { left = "", right = "" },
         },
