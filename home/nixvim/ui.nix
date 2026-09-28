@@ -27,23 +27,17 @@
         autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
       ]]
 
-      require("nightfox").setup({
-        options = {
-          transparent = false,
-          dim_inactive = false,
-          styles = {
-            comments = "italic",
-            conditionals = "italic",
-          },
-        },
+      require("ayu").setup({
+        mirage = false,
+        terminal = true,
       })
-      vim.cmd.colorscheme("carbonfox")
+      vim.cmd.colorscheme("ayu-dark")
       vim.cmd('highlight Visual cterm=NONE ctermbg=White ctermfg=Black guibg=White guifg=Black')
 
       require("lualine").setup {
         options = {
           icons_enabled = true,
-          theme = require("nightfox.util.lualine")("carbonfox"),
+          theme = "ayu",
           component_separators = { left = ")", right = "(" },
           section_separators = { left = "", right = "" },
         },
