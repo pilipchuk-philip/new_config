@@ -29,6 +29,18 @@ let
       sha256 = "05fk4rybn4b4ffnq0xpk54l81q7dz3f9dpj2zh9i0wv46k6n2054";
     };
   });
+  vellumNvim = pkgs.vimUtils.buildVimPlugin {
+    pname = "vellum.nvim";
+    version = "2026-09-30";
+    src = pkgs.fetchFromGitHub {
+      owner = "blackhat-7";
+      repo = "vellum.nvim";
+      rev = "c9a8665c5d306bf56c6df89896fed8bfaf3110b3";
+      sha256 = "0lrhxax0a8shg69cjjnkma743n3xiaras6ffgf291dmx5hz8m4rd";
+    };
+    # build.lua is a lazy.nvim post-install hook, not a requirable module.
+    nvimSkipModules = [ "build" ];
+  };
   treesitterWithParsers = pkgs.vimPlugins.nvim-treesitter.withPlugins (p: [
     p.c
     p.css
@@ -72,6 +84,7 @@ in
           cmp-under-comparator
           copilot-cmp
           copilot-lua
+          git-conflict-nvim
           kommentary
           nvim-snippy
           gitsigns-nvim
@@ -114,6 +127,7 @@ in
         treesitterWithParsers
         vimPluginRuscmd
         smartPaste
+        vellumNvim
       ];
 
     extraFiles = {

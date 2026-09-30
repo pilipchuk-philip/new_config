@@ -87,6 +87,8 @@ in
       set -g extended-keys on
       set -g focus-events on
       set -as terminal-features ',xterm-ghostty:RGB:clipboard:extkeys'
+      # vellum.nvim needs this to draw images (Kitty/Ghostty graphics protocol) through tmux.
+      set -g allow-passthrough on
 
       set -g base-index 1
       set -g pane-base-index 1

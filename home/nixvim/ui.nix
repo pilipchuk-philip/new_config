@@ -100,6 +100,8 @@
         preview_config = { border = "single", style = "minimal", relative = "cursor", row = 0, col = 1 },
       })
 
+      require("git-conflict").setup({})
+
       require("illuminate").configure({
         providers = { "lsp", "treesitter", "regex" },
       })
@@ -116,6 +118,10 @@
       require("render-markdown").setup({
         latex = { enabled = false },
       })
+
+      require("vellum").setup({})
+      vim.keymap.set("n", "<leader>mp", "<cmd>Vellum<cr>", { desc = "Markdown Preview" })
+      vim.keymap.set("n", "<leader>mz", function() require("vellum").zoom() end, { desc = "Markdown Preview Zoom" })
 
       require("todo-comments").setup({
         signs = true,
