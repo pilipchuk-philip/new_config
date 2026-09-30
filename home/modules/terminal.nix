@@ -1,7 +1,7 @@
-{ ... }:
+{ pkgs, ... }:
 
-{
-  xdg.configFile."ghostty/config".text = ''
+let
+  ghosttyConfig = ''
     term = xterm-256color
     theme = Ayu
     cursor-style = block
@@ -10,4 +10,17 @@
     clipboard-read = allow
     clipboard-write = allow
   '';
+in
+{
+  home.file =
+    if pkgs.stdenv.hostPlatform.isDarwin then
+      { "Library/Application Support/com.mitchellh.ghostty/config.ghostty".text = ghosttyConfig; }
+    else
+      { };
+
+  xdg.configFile =
+    if pkgs.stdenv.hostPlatform.isDarwin then
+      { }
+    else
+      { "ghostty/config.ghostty".text = ghosttyConfig; };
 }
