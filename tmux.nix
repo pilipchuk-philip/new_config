@@ -138,17 +138,18 @@ in
       set -g pane-base-index 1
       set-window-option -g pane-base-index 1
       set-option -g renumber-windows on
-      set -g pane-active-border-style "fg=#59C2FF"
+      # Ghostty's built-in Ayu palette (home/modules/terminal.nix).
+      set -g pane-active-border-style "fg=#59c2ff"
 
       # status bar
       set -g status on
-      set -g status-style bg=#0A0E14,fg=#B3B1AD
-      set -g status-left "#[bg=#01060E,fg=#E6B450] 󰌢 #S #[bg=#01060E,fg=#B3B1AD] "
+      set -g status-style bg=#0b0e14,fg=#bfbdb6
+      set -g status-left "#[bg=#11151c,fg=#ffb454] 󰌢 #S #[bg=#11151c,fg=#bfbdb6] "
       set -g status-left-length 200
-      set -g status-right "#[fg=#59C2FF]  #{cpu_percentage}  #{battery_percentage} #[fg=#E6B450] CPH:#(${tmuxWeatherCached}/bin/tmux-weather-cached)   %Y-%m-%d #[fg=#C2D94C]  %H:%M #[default]"
+      set -g status-right "#[fg=#59c2ff]  #{cpu_percentage}  #{battery_percentage} #[fg=#ffb454] CPH:#(${tmuxWeatherCached}/bin/tmux-weather-cached)   %Y-%m-%d #[fg=#aad94c]  %H:%M #[default]"
       setw -g window-status-format " #I:#W "
-      setw -g window-status-current-format "#[fg=#01060E,bg=#E6B450] #I:#W #[default]"
-      setw -g window-status-style fg=#626A73,bg=#0A0E14
+      setw -g window-status-current-format "#[fg=#0b0e14,bg=#ffb454] #I:#W #[default]"
+      setw -g window-status-style fg=#686868,bg=#0b0e14
       set -g status-right-length 200
       set -g status-interval 10
 

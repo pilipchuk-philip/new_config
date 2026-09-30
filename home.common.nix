@@ -4,6 +4,7 @@
   imports = [
     ./home/modules/shell.nix
     ./home/modules/devtools.nix
+    ./home/modules/opencode.nix
     ./home/modules/terminal.nix
     ./nixvim.nix
     # ./vscode.nix # Temporarily disabled for all hosts.

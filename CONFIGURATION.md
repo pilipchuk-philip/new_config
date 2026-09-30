@@ -80,14 +80,14 @@ config exists in the repo but is not applied by any target right now.
 
 Defined in [`flake.nix`](./flake.nix):
 
-| Output | Command | Notes |
-|---|---|---|
-| `nixosConfigurations.nixos` | `sudo nixos-rebuild switch --flake .#nixos` | Full NixOS system + Home Manager module for user `q` |
-| `darwinConfigurations.mac` | `sudo darwin-rebuild switch --flake .#mac` | nix-darwin, user `q`, personal machine |
-| `darwinConfigurations.mac-work` | `sudo darwin-rebuild switch --flake .#mac-work` | nix-darwin, user `ppy`, work machine |
-| `homeConfigurations.ubuntu-desktop` | `nix run home-manager -- switch --flake .#ubuntu-desktop` | Standalone Home Manager, no system module (non-NixOS Linux) |
-| `apps.x86_64-linux.home-manager` | `nix run .#home-manager` | Exposes the locked Home Manager CLI |
-| `checks` | `nix flake check --all-systems --no-build` | Dummy derivations that force-evaluate every configuration's `toplevel`/`activationPackage`/`system` |
+| Output                              | Command                                                   | Notes                                                                                               |
+| ----------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `nixosConfigurations.nixos`         | `sudo nixos-rebuild switch --flake .#nixos`               | Full NixOS system + Home Manager module for user `q`                                                |
+| `darwinConfigurations.mac`          | `sudo darwin-rebuild switch --flake .#mac`                | nix-darwin, user `q`, personal machine                                                              |
+| `darwinConfigurations.mac-work`     | `sudo darwin-rebuild switch --flake .#mac-work`           | nix-darwin, user `ppy`, work machine                                                                |
+| `homeConfigurations.ubuntu-desktop` | `nix run home-manager -- switch --flake .#ubuntu-desktop` | Standalone Home Manager, no system module (non-NixOS Linux)                                         |
+| `apps.x86_64-linux.home-manager`    | `nix run .#home-manager`                                  | Exposes the locked Home Manager CLI                                                                 |
+| `checks`                            | `nix flake check --all-systems --no-build`                | Dummy derivations that force-evaluate every configuration's `toplevel`/`activationPackage`/`system` |
 
 Both `nixpkgs` instances (`pkgs` for `x86_64-linux`, `pkgsDarwin` for
 `aarch64-darwin`) are built with `allowUnfree = true`. The `nixvim` input
@@ -237,24 +237,24 @@ Shared across every target via `home.common.nix` → `home/modules/*.nix`:
 
 Shell aliases (`home/modules/shell.nix`):
 
-| Alias | Expands to |
-|---|---|
-| `ls` | `lsd` |
-| `tree` | `ls --tree` |
-| `gs` | `git status` |
-| `gamen` | `git add . && git commit --amend` |
-| `cp` | `rsync -aP` |
-| `lg` | `lazygit` |
-| `rg` | `rg -S --hidden` |
-| `gc` | fzf-pick a recent branch (sorted by commit date) and check it out |
-| `fd` | `fd --hidden --color always -i` |
+| Alias   | Expands to                                                        |
+| ------- | ----------------------------------------------------------------- |
+| `ls`    | `lsd`                                                             |
+| `tree`  | `ls --tree`                                                       |
+| `gs`    | `git status`                                                      |
+| `gamen` | `git add . && git commit --amend`                                 |
+| `cp`    | `rsync -aP`                                                       |
+| `lg`    | `lazygit`                                                         |
+| `rg`    | `rg -S --hidden`                                                  |
+| `gc`    | fzf-pick a recent branch (sorted by commit date) and check it out |
+| `fd`    | `fd --hidden --color always -i`                                   |
 
 Git aliases (`home/modules/devtools.nix`):
 
-| Alias | Expands to |
-|---|---|
+| Alias    | Expands to                                       |
+| -------- | ------------------------------------------------ |
 | `git lg` | graph log: `log --graph --decorate --pretty=...` |
-| `git gs` | `status` |
+| `git gs` | `status`                                         |
 
 ## Neovim (nixvim)
 
@@ -426,18 +426,18 @@ flowchart TD
     update --> check
 ```
 
-| Script | Purpose |
-|---|---|
-| `nix-target` | Detects which flake target applies to the current machine: NixOS, Ubuntu/other Linux (Home Manager), or macOS user `q`/`ppy` (mac vs mac-work) |
-| `nix-repo` | Resolves the repo path from `NIX_CONFIG_REPO`, the current git root, or `$HOME/new_config`, in that order |
-| `nix-apply` | Runs the switch command for the detected target, no input updates. Supports `--dry-run` |
-| `nix-update` | `nix flake update` → `nix flake check --all-systems --no-build` → apply detected target. Leaves the updated `flake.lock` in place for inspection if the check fails. Supports `--dry-run` |
-| `nix-check` | Runs `nix flake check` plus repo-level checks (shellcheck on scripts, ripgrep-based lint) |
-| `nix-clean` | Lists generations, prunes ones older than `--keep-days` (default set in-script), runs GC. Supports `--dry-run` |
-| `nix-rollback` | `--list`s generations, or rolls back (optionally to a numeric generation for system profiles; plain rollback for Home Manager-only machines). Supports `--dry-run` |
-| `nix-diff-lock` | Shows what `nix flake update` would change in `flake.lock` without applying it |
-| `gdp` | `git diff` piped through `delta` |
-| `inf` | Installed as `inf`; source is `scripts/home` — tmux-based helper (see script for exact behavior) |
+| Script          | Purpose                                                                                                                                                                                   |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `nix-target`    | Detects which flake target applies to the current machine: NixOS, Ubuntu/other Linux (Home Manager), or macOS user `q`/`ppy` (mac vs mac-work)                                            |
+| `nix-repo`      | Resolves the repo path from `NIX_CONFIG_REPO`, the current git root, or `$HOME/new_config`, in that order                                                                                 |
+| `nix-apply`     | Runs the switch command for the detected target, no input updates. Supports `--dry-run`                                                                                                   |
+| `nix-update`    | `nix flake update` → `nix flake check --all-systems --no-build` → apply detected target. Leaves the updated `flake.lock` in place for inspection if the check fails. Supports `--dry-run` |
+| `nix-check`     | Runs `nix flake check` plus repo-level checks (shellcheck on scripts, ripgrep-based lint)                                                                                                 |
+| `nix-clean`     | Lists generations, prunes ones older than `--keep-days` (default set in-script), runs GC. Supports `--dry-run`                                                                            |
+| `nix-rollback`  | `--list`s generations, or rolls back (optionally to a numeric generation for system profiles; plain rollback for Home Manager-only machines). Supports `--dry-run`                        |
+| `nix-diff-lock` | Shows what `nix flake update` would change in `flake.lock` without applying it                                                                                                            |
+| `gdp`           | `git diff` piped through `delta`                                                                                                                                                          |
+| `inf`           | Installed as `inf`; source is `scripts/home` — tmux-based helper (see script for exact behavior)                                                                                          |
 
 ## Secrets
 
@@ -464,81 +464,81 @@ in `home/nixvim/ui.nix` (they live there because they're set right next to
 
 #### Core / editing
 
-| Keys | Mode | Action |
-|---|---|---|
-| `<Space>` | n, x | No-op (keeps it as leader without moving the cursor) |
-| `;` | n | `:` (enter command mode faster) |
-| `<C-a>` | n | Select entire buffer (`gg<S-v>G`) |
-| `j` / `k` | n | Move by display line unless a count is given (wrap-aware) |
-| `x` (visual) `p` | x | Paste without overwriting the unnamed register (`"_dP`) |
-| `ff` | n | Toggle `foldmethod` between `indent` and `marker` |
-| `<leader>y` | n | Copy the current file's path (relative to cwd) to the `+` register |
-| `<leader>bd` | n | `:bd` — delete current buffer |
-| `<C-/>` / `<C-_>` | n, v | Toggle comment (kommentary) — both bound on macOS and Linux for terminal compatibility |
-| `\x1F` (`C-/` as sent inside tmux) | n, v | Same comment toggle, for when tmux reinterprets `C-/` |
-| `<C-c>` | x (visual) | Yank to system clipboard (`*` on macOS, `+` on Linux) |
+| Keys                               | Mode       | Action                                                                                 |
+| ---------------------------------- | ---------- | -------------------------------------------------------------------------------------- |
+| `<Space>`                          | n, x       | No-op (keeps it as leader without moving the cursor)                                   |
+| `;`                                | n          | `:` (enter command mode faster)                                                        |
+| `<C-a>`                            | n          | Select entire buffer (`gg<S-v>G`)                                                      |
+| `j` / `k`                          | n          | Move by display line unless a count is given (wrap-aware)                              |
+| `x` (visual) `p`                   | x          | Paste without overwriting the unnamed register (`"_dP`)                                |
+| `ff`                               | n          | Toggle `foldmethod` between `indent` and `marker`                                      |
+| `<leader>y`                        | n          | Copy the current file's path (relative to cwd) to the `+` register                     |
+| `<leader>bd`                       | n          | `:bd` — delete current buffer                                                          |
+| `<C-/>` / `<C-_>`                  | n, v       | Toggle comment (kommentary) — both bound on macOS and Linux for terminal compatibility |
+| `\x1F` (`C-/` as sent inside tmux) | n, v       | Same comment toggle, for when tmux reinterprets `C-/`                                  |
+| `<C-c>`                            | x (visual) | Yank to system clipboard (`*` on macOS, `+` on Linux)                                  |
 
 #### Windows, tabs, buffers
 
-| Keys | Action |
-|---|---|
-| `te` | `:tabedit` |
-| `<Tab>` | `:bp` (previous buffer) |
-| `ss` | Horizontal split, focus new pane |
-| `sv` | Vertical split, focus new pane |
-| `sh` / `sj` / `sk` / `sl` | Move focus to the window left/down/up/right |
+| Keys                                  | Action                                                                                                        |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `te`                                  | `:tabedit`                                                                                                    |
+| `<Tab>`                               | `:bp` (previous buffer)                                                                                       |
+| `ss`                                  | Horizontal split, focus new pane                                                                              |
+| `sv`                                  | Vertical split, focus new pane                                                                                |
+| `sh` / `sj` / `sk` / `sl`             | Move focus to the window left/down/up/right                                                                   |
 | `<c-h>` / `<c-j>` / `<c-k>` / `<c-l>` | tmux-aware pane navigation (`vim-tmux-navigator`) — moves between Neovim splits **and** tmux panes seamlessly |
 
 #### Search / find (Telescope + snacks.nvim pickers)
 
-| Keys | Mode | Action |
-|---|---|---|
-| `<C-f>` | n, i | Live grep with args (Telescope `live_grep_args`) |
-| `<C-f>` | x (visual) | Live grep with args, pre-filled with the visual selection |
-| `<C-p>` | n | Find files (hidden included) — `snacks.nvim` picker |
-| `<leader><space>` | n | Smart find (files/recent, `snacks.nvim`) |
-| `<leader>/` | n | Grep (`snacks.nvim`) |
-| `<C-e>` | n | Recent files |
-| `<leader>fr` | n | Recent files (duplicate of `<C-e>`) |
-| `<leader>fp` | n | Projects picker |
-| `<C-y>` | n | LSP symbols |
-| `<C-d>` | n | Buffer diagnostics |
-| `<C-t>` | n | TODO/FIX/FIXME comments |
-| `<leader>n` | n | Notification history |
-| `<leader>s/` | n | Search history |
-| `<leader>sa` | n | Autocommands |
-| `<leader>sb` | n | Buffer lines (fuzzy line search) |
-| `<leader>sc` | n | Command history |
-| `<leader>sC` | n | Commands |
-| `<leader>sd` | n | Diagnostics (workspace) |
-| `<leader>sD` | n | Diagnostics (buffer) |
-| `<leader>sh` | n | Help pages |
-| `<leader>si` | n | Icons |
-| `<leader>sk` | n | Keymaps (browse all keymaps — useful as a live reference!) |
-| `<leader>sM` | n | Man pages |
-| `<leader>su` | n | Undo history |
+| Keys              | Mode       | Action                                                     |
+| ----------------- | ---------- | ---------------------------------------------------------- |
+| `<C-f>`           | n, i       | Live grep with args (Telescope `live_grep_args`)           |
+| `<C-f>`           | x (visual) | Live grep with args, pre-filled with the visual selection  |
+| `<C-p>`           | n          | Find files (hidden included) — `snacks.nvim` picker        |
+| `<leader><space>` | n          | Smart find (files/recent, `snacks.nvim`)                   |
+| `<leader>/`       | n          | Grep (`snacks.nvim`)                                       |
+| `<C-e>`           | n          | Recent files                                               |
+| `<leader>fr`      | n          | Recent files (duplicate of `<C-e>`)                        |
+| `<leader>fp`      | n          | Projects picker                                            |
+| `<C-y>`           | n          | LSP symbols                                                |
+| `<C-d>`           | n          | Buffer diagnostics                                         |
+| `<C-t>`           | n          | TODO/FIX/FIXME comments                                    |
+| `<leader>n`       | n          | Notification history                                       |
+| `<leader>s/`      | n          | Search history                                             |
+| `<leader>sa`      | n          | Autocommands                                               |
+| `<leader>sb`      | n          | Buffer lines (fuzzy line search)                           |
+| `<leader>sc`      | n          | Command history                                            |
+| `<leader>sC`      | n          | Commands                                                   |
+| `<leader>sd`      | n          | Diagnostics (workspace)                                    |
+| `<leader>sD`      | n          | Diagnostics (buffer)                                       |
+| `<leader>sh`      | n          | Help pages                                                 |
+| `<leader>si`      | n          | Icons                                                      |
+| `<leader>sk`      | n          | Keymaps (browse all keymaps — useful as a live reference!) |
+| `<leader>sM`      | n          | Man pages                                                  |
+| `<leader>su`      | n          | Undo history                                               |
 
 #### File explorer
 
-| Keys | Action |
-|---|---|
-| `<BS>` | Open `snacks.nvim` explorer (also rebound inside the explorer's own buffer so backspace re-opens it) |
-| `<leader><BS>` | Reveal current file in the explorer |
+| Keys           | Action                                                                                               |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| `<BS>`         | Open `snacks.nvim` explorer (also rebound inside the explorer's own buffer so backspace re-opens it) |
+| `<leader><BS>` | Reveal current file in the explorer                                                                  |
 
 #### Git
 
-| Keys | Action |
-|---|---|
-| `<leader>lg` | Open `lazygit` (via `snacks.nvim`) |
-| `<leader>gb` | Git branches picker |
-| `<leader>gll` | Git log |
-| `<leader>gL` | Git log for current line |
-| `<leader>gs` | Git status picker |
-| `<leader>gd` | Git diff (hunks) picker |
-| `<leader>gf` | Git log for current file |
-| `<leader>gB` | Git browse (open current line on remote, e.g. GitHub) — n, x |
-| `<C-g>` | Diff current branch vs `master`/`main` (auto-detects which exists), file-by-file picker with inline diff preview |
-| `<leader>gh` | Custom GitHub helper (`vendor/github-helper.lua`) — n, x |
+| Keys          | Action                                                                                                           |
+| ------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `<leader>lg`  | Open `lazygit` (via `snacks.nvim`)                                                                               |
+| `<leader>gb`  | Git branches picker                                                                                              |
+| `<leader>gll` | Git log                                                                                                          |
+| `<leader>gL`  | Git log for current line                                                                                         |
+| `<leader>gs`  | Git status picker                                                                                                |
+| `<leader>gd`  | Git diff (hunks) picker                                                                                          |
+| `<leader>gf`  | Git log for current file                                                                                         |
+| `<leader>gB`  | Git browse (open current line on remote, e.g. GitHub) — n, x                                                     |
+| `<C-g>`       | Diff current branch vs `master`/`main` (auto-detects which exists), file-by-file picker with inline diff preview |
+| `<leader>gh`  | Custom GitHub helper (`vendor/github-helper.lua`) — n, x                                                         |
 
 #### Git conflict resolution (git-conflict.nvim)
 
@@ -546,14 +546,14 @@ Buffer-local — these mappings only activate in a buffer where
 `git-conflict.nvim` has actually detected `<<<<<<<`/`=======`/`>>>>>>>`
 markers, and disappear again once the conflict is resolved.
 
-| Keys | Mode | Action |
-|---|---|---|
-| `co` | n, x | Choose ours (current/local side) |
-| `ct` | n, x | Choose theirs (incoming/remote side) |
-| `cb` | n, x | Choose both |
+| Keys | Mode | Action                                        |
+| ---- | ---- | --------------------------------------------- |
+| `co` | n, x | Choose ours (current/local side)              |
+| `ct` | n, x | Choose theirs (incoming/remote side)          |
+| `cb` | n, x | Choose both                                   |
 | `c0` | n, x | Choose none (delete the whole conflict block) |
-| `]x` | n | Jump to next conflict |
-| `[x` | n | Jump to previous conflict |
+| `]x` | n    | Jump to next conflict                         |
+| `[x` | n    | Jump to previous conflict                     |
 
 Also available as Ex commands regardless of mappings:
 `:GitConflictChooseOurs`, `:GitConflictChooseTheirs`,
@@ -563,94 +563,94 @@ every conflicted file via `:copen`).
 
 #### Markdown preview (vellum.nvim)
 
-| Keys | Context | Action |
-|---|---|---|
-| `<leader>mp` | any buffer | Toggle the live preview split for the current markdown file (`:Vellum`) |
-| `<leader>mz` | markdown buffer | Zoom the diagram/image under the cursor full-screen, without leaving the source buffer |
-| `gx` or `<CR>` | inside the preview, on a link | Follow it — web links open in the browser, `#heading` jumps to that heading, links to other markdown files open them (preview follows) |
-| `<CR>` | inside the preview, on a diagram/image | Open it full-screen |
-| `q` | inside the preview | Close the preview |
-| `+` / `-` | full-screen image/diagram view | Zoom in/out (`Ctrl+wheel` zooms toward the mouse pointer) |
-| `h`/`j`/`k`/`l`, arrow keys, mouse wheel | full-screen image/diagram view | Pan |
-| `0` | full-screen image/diagram view | Fit image to screen |
-| `q` or `<Esc>` | full-screen image/diagram view | Close |
+| Keys                                     | Context                                | Action                                                                                                                                 |
+| ---------------------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `<leader>mp`                             | any buffer                             | Toggle the live preview split for the current markdown file (`:Vellum`)                                                                |
+| `<leader>mz`                             | markdown buffer                        | Zoom the diagram/image under the cursor full-screen, without leaving the source buffer                                                 |
+| `gx` or `<CR>`                           | inside the preview, on a link          | Follow it — web links open in the browser, `#heading` jumps to that heading, links to other markdown files open them (preview follows) |
+| `<CR>`                                   | inside the preview, on a diagram/image | Open it full-screen                                                                                                                    |
+| `q`                                      | inside the preview                     | Close the preview                                                                                                                      |
+| `+` / `-`                                | full-screen image/diagram view         | Zoom in/out (`Ctrl+wheel` zooms toward the mouse pointer)                                                                              |
+| `h`/`j`/`k`/`l`, arrow keys, mouse wheel | full-screen image/diagram view         | Pan                                                                                                                                    |
+| `0`                                      | full-screen image/diagram view         | Fit image to screen                                                                                                                    |
+| `q` or `<Esc>`                           | full-screen image/diagram view         | Close                                                                                                                                  |
 
 `:Vellum export` writes the current markdown buffer to a PDF next to it;
 `:Vellum export notes.html` exports self-contained HTML instead.
 
 #### LSP
 
-| Keys | Mode | Action |
-|---|---|---|
-| `K` | n | Hover docs (`hover.nvim`) |
-| `gK` | n | Hover — pick which provider/source |
-| `<MouseMove>` | n | Hover on mouse hover (long delay to avoid flicker) |
-| `gd` | n | Go to definition |
-| `gs` | n | Go to definition in a new vertical split |
-| `gD` | n | Go to declaration |
-| `gr` | n | References |
-| `gI` | n | Go to implementation |
-| `gy` | n | Go to type definition |
-| `<leader>ca` | n, x | Code actions (`actions-preview.nvim`) |
-| `<leader>cR` | n | Rename current file (and update requires/imports via `snacks.nvim`) |
-| In-buffer rename | — | `inc-rename.nvim` provides `:IncRename` (no default keymap bound) |
+| Keys             | Mode | Action                                                              |
+| ---------------- | ---- | ------------------------------------------------------------------- |
+| `K`              | n    | Hover docs (`hover.nvim`)                                           |
+| `gK`             | n    | Hover — pick which provider/source                                  |
+| `<MouseMove>`    | n    | Hover on mouse hover (long delay to avoid flicker)                  |
+| `gd`             | n    | Go to definition                                                    |
+| `gs`             | n    | Go to definition in a new vertical split                            |
+| `gD`             | n    | Go to declaration                                                   |
+| `gr`             | n    | References                                                          |
+| `gI`             | n    | Go to implementation                                                |
+| `gy`             | n    | Go to type definition                                               |
+| `<leader>ca`     | n, x | Code actions (`actions-preview.nvim`)                               |
+| `<leader>cR`     | n    | Rename current file (and update requires/imports via `snacks.nvim`) |
+| In-buffer rename | —    | `inc-rename.nvim` provides `:IncRename` (no default keymap bound)   |
 
 #### Bookmarks (vim-bookmarks)
 
 Enabled per-buffer via an autocommand (disabled inside NERDTree-style buffers):
 
-| Keys | Action |
-|---|---|
-| `mm` | Toggle bookmark on current line |
-| `mi` | Annotate bookmark |
-| `mn` / `mp` | Jump to next / previous bookmark |
-| `ma` | Show all bookmarks |
-| `mc` | Clear bookmarks in buffer |
-| `mx` | Clear all bookmarks |
-| `mkk` / `mjj` | Move bookmark up / down |
-| `<leader>b` | Open custom bookmarks picker (`vendor/bookmarks-picker.lua`) |
+| Keys          | Action                                                       |
+| ------------- | ------------------------------------------------------------ |
+| `mm`          | Toggle bookmark on current line                              |
+| `mi`          | Annotate bookmark                                            |
+| `mn` / `mp`   | Jump to next / previous bookmark                             |
+| `ma`          | Show all bookmarks                                           |
+| `mc`          | Clear bookmarks in buffer                                    |
+| `mx`          | Clear all bookmarks                                          |
+| `mkk` / `mjj` | Move bookmark up / down                                      |
+| `<leader>b`   | Open custom bookmarks picker (`vendor/bookmarks-picker.lua`) |
 
 #### UI toggles (`Snacks.toggle`)
 
-| Keys | Toggles |
-|---|---|
-| `<leader>us` | Spelling |
-| `<leader>uw` | Line wrap |
-| `<leader>uL` | Relative line numbers |
-| `<leader>ud` | Diagnostics |
-| `<leader>ul` | Line numbers |
-| `<leader>uc` | Conceal level |
+| Keys         | Toggles                 |
+| ------------ | ----------------------- |
+| `<leader>us` | Spelling                |
+| `<leader>uw` | Line wrap               |
+| `<leader>uL` | Relative line numbers   |
+| `<leader>ud` | Diagnostics             |
+| `<leader>ul` | Line numbers            |
+| `<leader>uc` | Conceal level           |
 | `<leader>uT` | Treesitter highlighting |
-| `<leader>ub` | Dark/light background |
-| `<leader>uh` | Inlay hints |
-| `<leader>ug` | Indent guides |
-| `<leader>uD` | Dim (focus mode) |
+| `<leader>ub` | Dark/light background   |
+| `<leader>uh` | Inlay hints             |
+| `<leader>ug` | Indent guides           |
+| `<leader>uD` | Dim (focus mode)        |
 
 #### Insert-mode / completion (`nvim-cmp`)
 
-| Keys | Action |
-|---|---|
-| `<C-Space>` | Trigger completion |
-| `<Down>` / `<Up>` | Select next/previous item |
-| `<C-c>` | Close completion menu |
-| `<CR>` | Confirm selection (replace) |
-| `<Tab>` | Select-and-confirm if a menu is visible, otherwise fall through |
-| `<C-d>` / `<C-f>` | Scroll completion docs down/up |
+| Keys              | Action                                                          |
+| ----------------- | --------------------------------------------------------------- |
+| `<C-Space>`       | Trigger completion                                              |
+| `<Down>` / `<Up>` | Select next/previous item                                       |
+| `<C-c>`           | Close completion menu                                           |
+| `<CR>`            | Confirm selection (replace)                                     |
+| `<Tab>`           | Select-and-confirm if a menu is visible, otherwise fall through |
+| `<C-d>` / `<C-f>` | Scroll completion docs down/up                                  |
 
 ### tmux keymaps
 
 Prefix is tmux's default (`C-b`) — the config doesn't remap it. All
 entries below are additional bindings from `tmux.nix`.
 
-| Keys | Context | Action |
-|---|---|---|
+| Keys                          | Context               | Action                                                                                                                                                                          |
+| ----------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `C-h` / `C-j` / `C-k` / `C-l` | root table, no prefix | Move to the pane left/down/up/right — unless the active pane is running Vim/fzf/pipenv/poetry (detected via `ps`), in which case the keys are forwarded to that program instead |
-| `C-\` | root table, no prefix | Same Vim-aware forwarding for "select last pane" |
-| `C-h/j/k/l` | copy-mode-vi | Select pane left/down/up/right |
-| `h` / `j` / `k` / `l` | after prefix | Select pane left/down/up/right (plain, non-Vim-aware) |
-| `C-/`, `C-_` | — | Explicitly unbound (left for the terminal/app to handle) |
-| Mouse wheel up/down | root table | Scroll 1 line per tick (enters copy-mode automatically if not already in one) |
-| Mouse wheel up/down | copy-mode-vi | Scroll 1 line per tick |
+| `C-\`                         | root table, no prefix | Same Vim-aware forwarding for "select last pane"                                                                                                                                |
+| `C-h/j/k/l`                   | copy-mode-vi          | Select pane left/down/up/right                                                                                                                                                  |
+| `h` / `j` / `k` / `l`         | after prefix          | Select pane left/down/up/right (plain, non-Vim-aware)                                                                                                                           |
+| `C-/`, `C-_`                  | —                     | Explicitly unbound (left for the terminal/app to handle)                                                                                                                        |
+| Mouse wheel up/down           | root table            | Scroll 1 line per tick (enters copy-mode automatically if not already in one)                                                                                                   |
+| Mouse wheel up/down           | copy-mode-vi          | Scroll 1 line per tick                                                                                                                                                          |
 
 Plugin-provided (not custom-bound here, but active): `tmux-power-zoom`
 (pane zoom), `tmux-resurrect` (session save/restore, default bindings),
@@ -668,13 +668,13 @@ this config via `devtools.nix`/`toolchains.nix`) plus a clipboard tool
 (`pbcopy` on macOS, `xclip`/`wl-clipboard` on Linux, both already
 installed).
 
-| Keys | Context | Action |
-|---|---|---|
-| `prefix` + `Tab` | any pane | Open the extrakto fuzzy-find popup |
-| `Ctrl+f` | inside extrakto | Cycle custom filters (word/line/path/url/…) |
-| `Ctrl+l` | inside extrakto | Show extrakto's own help |
-| `Tab` | inside extrakto | Insert the selected text into the current pane |
-| `Enter` | inside extrakto | Copy the selected text to the clipboard |
+| Keys             | Context         | Action                                         |
+| ---------------- | --------------- | ---------------------------------------------- |
+| `prefix` + `Tab` | any pane        | Open the extrakto fuzzy-find popup             |
+| `Ctrl+f`         | inside extrakto | Cycle custom filters (word/line/path/url/…)    |
+| `Ctrl+l`         | inside extrakto | Show extrakto's own help                       |
+| `Tab`            | inside extrakto | Insert the selected text into the current pane |
+| `Enter`          | inside extrakto | Copy the selected text to the clipboard        |
 
 #### tmux-agent-sidebar
 
@@ -684,10 +684,10 @@ git status, worktrees, desktop notifications. Keys below are the
 plugin's own defaults (set via `@sidebar_key`/`@sidebar_key_all`, not
 overridden here).
 
-| Keys | Action |
-|---|---|
+| Keys           | Action                                   |
+| -------------- | ---------------------------------------- |
 | `prefix` + `e` | Toggle the sidebar in the current window |
-| `prefix` + `E` | Toggle the sidebar in every window |
+| `prefix` + `E` | Toggle the sidebar in every window       |
 
 The sidebar auto-creates itself for new windows by default
 (`@sidebar_auto_create on`). Agent hookup is per-tool:
@@ -718,18 +718,18 @@ Only relevant if `vscode.nix` is re-enabled (see [VS Code](#vs-code)).
 
 #### Vim-emulation leader mappings (`settings.nix`, `vim.normalModeKeyBindings`)
 
-| Keys | Action |
-|---|---|
-| `mm` | Toggle bookmark |
-| `sv` | Split editor (vertical) |
-| `ss` | Split editor up |
-| `<leader>cp` | Copy relative file path |
-| `<leader>gs` | Git: view changes |
-| `<leader>ls` | Go to symbol |
-| `<leader>t` | Open Problems panel |
-| `gr` | Find references |
-| `<leader>ff` | Format document |
-| `<leader>c` | Open chat (Copilot Chat) |
+| Keys         | Action                                                   |
+| ------------ | -------------------------------------------------------- |
+| `mm`         | Toggle bookmark                                          |
+| `sv`         | Split editor (vertical)                                  |
+| `ss`         | Split editor up                                          |
+| `<leader>cp` | Copy relative file path                                  |
+| `<leader>gs` | Git: view changes                                        |
+| `<leader>ls` | Go to symbol                                             |
+| `<leader>t`  | Open Problems panel                                      |
+| `gr`         | Find references                                          |
+| `<leader>ff` | Format document                                          |
+| `<leader>c`  | Open chat (Copilot Chat)                                 |
 | `<leader>og` | Run `gh browse <file>:<line>` in the integrated terminal |
 
 #### Native keybindings, shared logic (`keybindings.nix`)
@@ -739,25 +739,25 @@ normal/visual mode; `/` triggers find in normal mode.
 
 #### Native keybindings — Linux (`ctrl`-based)
 
-| Keys | Action |
-|---|---|
-| `Ctrl+Shift+C` | Toggle Copilot completions |
-| `Ctrl+L/H/J/K` | Navigate editor group right/left/down/up |
-| `Alt+P` / `Ctrl+P` | Quick open |
-| `Alt+W` | Close active editor |
-| `Shift+Alt+W` | Close all groups |
-| `Alt+E` / `Ctrl+E` | Show all editors (normal mode) |
-| `Alt+T` / `Ctrl+T` | Toggle integrated terminal |
-| `Ctrl+Shift+F` | Find in folder (Explorer focus) |
-| `Alt+1` | Toggle sidebar + focus Explorer |
-| `Alt+2` | Toggle sidebar + focus Source Control |
-| `Alt+3` | Toggle sidebar + focus Bookmarks view |
-| `Shift+K` | Move lines up (Visual Line) / show hover (Normal) |
-| `Alt+Enter` | Code action (normal mode) |
-| `Alt+R` | Go to references (normal mode) |
-| `Shift+Alt+=` | Fold all (normal mode; replaces zoom-in) |
-| `Shift+Alt+-` | Unfold all (normal mode; replaces zoom-out) |
-| `Ctrl+Shift+V` | Paste (replaces default `Ctrl+V`) |
+| Keys               | Action                                            |
+| ------------------ | ------------------------------------------------- |
+| `Ctrl+Shift+C`     | Toggle Copilot completions                        |
+| `Ctrl+L/H/J/K`     | Navigate editor group right/left/down/up          |
+| `Alt+P` / `Ctrl+P` | Quick open                                        |
+| `Alt+W`            | Close active editor                               |
+| `Shift+Alt+W`      | Close all groups                                  |
+| `Alt+E` / `Ctrl+E` | Show all editors (normal mode)                    |
+| `Alt+T` / `Ctrl+T` | Toggle integrated terminal                        |
+| `Ctrl+Shift+F`     | Find in folder (Explorer focus)                   |
+| `Alt+1`            | Toggle sidebar + focus Explorer                   |
+| `Alt+2`            | Toggle sidebar + focus Source Control             |
+| `Alt+3`            | Toggle sidebar + focus Bookmarks view             |
+| `Shift+K`          | Move lines up (Visual Line) / show hover (Normal) |
+| `Alt+Enter`        | Code action (normal mode)                         |
+| `Alt+R`            | Go to references (normal mode)                    |
+| `Shift+Alt+=`      | Fold all (normal mode; replaces zoom-in)          |
+| `Shift+Alt+-`      | Unfold all (normal mode; replaces zoom-out)       |
+| `Ctrl+Shift+V`     | Paste (replaces default `Ctrl+V`)                 |
 
 Explorer-focused single-key bindings (when a folder item is focused, not
 root, not read-only, not typing): `r` rename, `c` copy, `p` paste, `x`
@@ -772,17 +772,17 @@ native VS Code behavior.
 
 #### Native keybindings — macOS (`cmd`-based)
 
-| Keys | Action |
-|---|---|
-| `Cmd+P` | Quick open |
-| `Cmd+E` | Show all editors (normal mode) |
-| `Cmd+T` | Toggle integrated terminal |
-| `Cmd+1` | Toggle sidebar + focus Explorer |
-| `Cmd+2` | Toggle sidebar + focus Source Control |
-| `Cmd+3` | Toggle sidebar + focus Bookmarks view |
-| `Cmd+Enter` | Code action (normal mode) |
-| `Cmd+R` | Go to references (normal mode) |
-| `Shift+Cmd+=` | Fold all (normal mode; replaces zoom-in) |
+| Keys          | Action                                      |
+| ------------- | ------------------------------------------- |
+| `Cmd+P`       | Quick open                                  |
+| `Cmd+E`       | Show all editors (normal mode)              |
+| `Cmd+T`       | Toggle integrated terminal                  |
+| `Cmd+1`       | Toggle sidebar + focus Explorer             |
+| `Cmd+2`       | Toggle sidebar + focus Source Control       |
+| `Cmd+3`       | Toggle sidebar + focus Bookmarks view       |
+| `Cmd+Enter`   | Code action (normal mode)                   |
+| `Cmd+R`       | Go to references (normal mode)              |
+| `Shift+Cmd+=` | Fold all (normal mode; replaces zoom-in)    |
 | `Shift+Cmd+-` | Unfold all (normal mode; replaces zoom-out) |
 
 ### OS-level key remaps
@@ -790,13 +790,13 @@ native VS Code behavior.
 Not application keymaps, but they change how every keystroke is
 interpreted, so they belong here too:
 
-| Target | Setting | Effect |
-|---|---|---|
-| NixOS (`configuration.nix`) | `xkb.options = "grp:alt_space_toggle,ctrl:nocaps"` | `Alt+Space` toggles the `us`/`ru` keyboard layout; CapsLock acts as Ctrl |
-| macOS `darwin/common.nix` (base) | `remapCapsLockToEscape = true` | CapsLock → Escape (useful in modal editors) |
-| macOS `mac` / `mac-work` (override) | `remapCapsLockToEscape = false; remapCapsLockToControl = true` | Both real machines actually run CapsLock → **Ctrl** instead, overriding the common default |
-| macOS (all) | `InitialKeyRepeat = 15; KeyRepeat = 2` | Much faster key repeat than the macOS default |
-| Ubuntu (`home/ubuntu-desktop.nix`, dconf) | `xkb-options = ["grp_led:scroll" "ctrl:nocaps"]` | CapsLock → Ctrl at the GNOME input-source level (mirrors the NixOS setting since there's no system-level xkb config on generic Linux) |
+| Target                                    | Setting                                                        | Effect                                                                                                                                |
+| ----------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| NixOS (`configuration.nix`)               | `xkb.options = "grp:alt_space_toggle,ctrl:nocaps"`             | `Alt+Space` toggles the `us`/`ru` keyboard layout; CapsLock acts as Ctrl                                                              |
+| macOS `darwin/common.nix` (base)          | `remapCapsLockToEscape = true`                                 | CapsLock → Escape (useful in modal editors)                                                                                           |
+| macOS `mac` / `mac-work` (override)       | `remapCapsLockToEscape = false; remapCapsLockToControl = true` | Both real machines actually run CapsLock → **Ctrl** instead, overriding the common default                                            |
+| macOS (all)                               | `InitialKeyRepeat = 15; KeyRepeat = 2`                         | Much faster key repeat than the macOS default                                                                                         |
+| Ubuntu (`home/ubuntu-desktop.nix`, dconf) | `xkb-options = ["grp_led:scroll" "ctrl:nocaps"]`               | CapsLock → Ctrl at the GNOME input-source level (mirrors the NixOS setting since there's no system-level xkb config on generic Linux) |
 
 So across **every** target — NixOS, both Macs, and Ubuntu — CapsLock
 consistently becomes Ctrl. This is the one remap kept identical
