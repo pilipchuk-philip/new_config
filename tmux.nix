@@ -92,17 +92,17 @@ in
       set -g pane-base-index 1
       set-window-option -g pane-base-index 1
       set-option -g renumber-windows on
-      set -g pane-active-border-style "fg=brightblue"
+      set -g pane-active-border-style "fg=#59C2FF"
 
       # status bar
       set -g status on
-      set -g status-style bg=#1E1E2E,fg=white
-      set -g status-left "#[bg=black,fg=white] 󰌢 #S #[bg=black,fg=white] "
+      set -g status-style bg=#0A0E14,fg=#B3B1AD
+      set -g status-left "#[bg=#01060E,fg=#E6B450] 󰌢 #S #[bg=#01060E,fg=#B3B1AD] "
       set -g status-left-length 200
-      set -g status-right "#[fg=blue]  #{cpu_percentage}  #{battery_percentage} #[fg=yellow] CPH:#(${tmuxWeatherCached}/bin/tmux-weather-cached)   %Y-%m-%d #[fg=green]  %H:%M #[default]"
+      set -g status-right "#[fg=#59C2FF]  #{cpu_percentage}  #{battery_percentage} #[fg=#E6B450] CPH:#(${tmuxWeatherCached}/bin/tmux-weather-cached)   %Y-%m-%d #[fg=#C2D94C]  %H:%M #[default]"
       setw -g window-status-format " #I:#W "
-      setw -g window-status-current-format "#[fg=black,bg=#87afff] #I:#W #[default]"
-      setw -g window-status-style fg=white,bg=black
+      setw -g window-status-current-format "#[fg=#01060E,bg=#E6B450] #I:#W #[default]"
+      setw -g window-status-style fg=#626A73,bg=#0A0E14
       set -g status-right-length 200
       set -g status-interval 10
 
