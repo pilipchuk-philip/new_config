@@ -211,7 +211,14 @@ Shared across every target via `home.common.nix` → `home/modules/*.nix`:
   Powerlevel10k sourced from `p10k.zsh`, `uv`/`uvx` zsh completions
   generated at build time, aliases (see table below), and a `tmux()`
   shell function that auto-names sessions after the current directory
-  (`tmux` with no args = `new-session -A -s $PWD:t`).
+  (`tmux` with no args = `new-session -A -s $PWD:t`). `initContent` is
+  wrapped in `lib.mkAfter` and ends by re-prepending
+  `${config.home.profileDirectory}/bin` onto `PATH`: login shells on
+  macOS (and Ubuntu, which ships its own `/usr/bin/vim`) re-inject the
+  system `PATH` entries after Home Manager's own setup runs, which was
+  shadowing nixvim's `vim`/`vi` aliases with the system binary — this
+  line guarantees the Home Manager profile wins regardless of what ran
+  before it or which module's `initContent` merged first.
 - **`devtools.nix`** — `direnv`, `git` (with the Catppuccin Delta theme
   fetched from GitHub, `lg`/`gs` aliases), `delta` as pager, and the bulk
   of the CLI toolbox: `ripgrep`, `fd`, `lsd`, `tmux`, `btop`, `fzf`,
@@ -324,8 +331,26 @@ All keybindings are catalogued in [Neovim keymaps](#neovim-keymaps) below.
 
 [`tmux.nix`](./tmux.nix) configures `programs.tmux` (mouse on, vi copy
 mode) with plugins: `sensible`, `vim-tmux-navigator`, `yank`, `resurrect`,
-`cpu`, `battery`, and a custom-built `tmux-power-zoom` (fetched from
-`jaclu/tmux-power-zoom`).
+`cpu`, `battery`, `extrakto`, a custom-built `tmux-power-zoom` (fetched
+from `jaclu/tmux-power-zoom`), `tmux-agent-sidebar`
+(`hiroppy/tmux-agent-sidebar`), and `continuum` (loaded after
+`resurrect`, with `@continuum-restore 'on'` so the last session
+auto-restores when tmux starts — `resurrect` still owns the actual
+save/restore logic, `continuum` just automates calling it periodically
+and on startup).
+
+`tmux-agent-sidebar` is a compiled Rust binary, not a shell-script plugin —
+`tmux.nix` fetches the correct pre-built release binary per platform
+(`darwin-aarch64` for `mac`/`mac-work`, `linux-x86_64` for `nixos`/
+`ubuntu-desktop`) via `pkgs.fetchurl`, bakes it into the plugin's `bin/`
+directory with `pkgs.tmuxPlugins.mkTmuxPlugin`'s `postInstall`, and
+ad-hoc code-signs it on Darwin (`pkgs.darwin.sigtool`'s `codesign`, same
+fixup nixpkgs' own `opencode` package applies) since Apple Silicon refuses
+to run an unsigned binary. The module also declares
+`xdg.configFile."opencode/plugins/tmux-agent-sidebar.js"` as a symlink
+into that same build, wiring OpenCode into the sidebar without touching
+anything else under `~/.config/opencode/plugins/`. See
+[tmux-agent-sidebar](#tmux-agent-sidebar) in the Keymaps section.
 
 Notable details:
 
@@ -629,7 +654,58 @@ entries below are additional bindings from `tmux.nix`.
 
 Plugin-provided (not custom-bound here, but active): `tmux-power-zoom`
 (pane zoom), `tmux-resurrect` (session save/restore, default bindings),
-`tmux-yank` (copy to system clipboard on yank in copy-mode).
+`tmux-yank` (copy to system clipboard on yank in copy-mode),
+`tmux-continuum` (autosaves the session every few minutes and restores
+it on tmux start — no keys of its own, `@continuum-restore` is the only
+option set).
+
+#### extrakto
+
+Fuzzy-find text that's already visible on screen (paths, URLs, git
+hashes, man-page flags, container names, …) instead of selecting it by
+hand — works over SSH too. Needs `fzf` and Python 3 (both already in
+this config via `devtools.nix`/`toolchains.nix`) plus a clipboard tool
+(`pbcopy` on macOS, `xclip`/`wl-clipboard` on Linux, both already
+installed).
+
+| Keys | Context | Action |
+|---|---|---|
+| `prefix` + `Tab` | any pane | Open the extrakto fuzzy-find popup |
+| `Ctrl+f` | inside extrakto | Cycle custom filters (word/line/path/url/…) |
+| `Ctrl+l` | inside extrakto | Show extrakto's own help |
+| `Tab` | inside extrakto | Insert the selected text into the current pane |
+| `Enter` | inside extrakto | Copy the selected text to the clipboard |
+
+#### tmux-agent-sidebar
+
+Tracks every Claude Code, Codex, and OpenCode pane across all sessions
+and windows in a sidebar — prompts, tool calls, background-shell state,
+git status, worktrees, desktop notifications. Keys below are the
+plugin's own defaults (set via `@sidebar_key`/`@sidebar_key_all`, not
+overridden here).
+
+| Keys | Action |
+|---|---|
+| `prefix` + `e` | Toggle the sidebar in the current window |
+| `prefix` + `E` | Toggle the sidebar in every window |
+
+The sidebar auto-creates itself for new windows by default
+(`@sidebar_auto_create on`). Agent hookup is per-tool:
+
+- **OpenCode** — wired declaratively (see [tmux](#tmux) above), no
+  manual step needed.
+- **Claude Code** — needs `/plugin marketplace add <plugin-dir>` +
+  `/plugin install tmux-agent-sidebar@hiroppy` run once inside a Claude
+  Code session. Upstream's docs assume a TPM install at
+  `~/.tmux/plugins/tmux-agent-sidebar`; this repo builds the plugin with
+  Nix instead, so there's no such path — resolve the actual store path
+  first:
+  ```sh
+  tmux show-options -gv @agent_sidebar_bin | xargs dirname | xargs dirname
+  ```
+  and pass that to `/plugin marketplace add`.
+- **Codex** — needs its setup snippet pasted once (press `prefix + e`,
+  click the yellow `ⓘ` badge in a Codex pane).
 
 Shell integration: typing `tmux` with no arguments (via the zsh function
 in `home/modules/shell.nix`) attaches to — or creates — a session named

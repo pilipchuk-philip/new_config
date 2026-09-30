@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 let
   tmuxPowerZoom = pkgs.tmuxPlugins.mkTmuxPlugin {
@@ -11,6 +11,43 @@ let
       rev = "v1.0.0";
       sha256 = "020km8zlfj8jhlg6xn65syn75z9xyyl2gnlgrhx96b1rl2rq8nfc";
     };
+  };
+  agentSidebarVersion = "0.13.0";
+  # Pre-built release binary (matches upstream's own TPM install path) instead
+  # of building the Rust source, picked per-platform since this module is
+  # shared between the Linux and Darwin home-manager targets.
+  agentSidebarBinary =
+    if pkgs.stdenv.hostPlatform.isDarwin then
+      pkgs.fetchurl {
+        url = "https://github.com/hiroppy/tmux-agent-sidebar/releases/download/v${agentSidebarVersion}/tmux-agent-sidebar-darwin-aarch64";
+        sha256 = "18r3iijfv4q16spnykfpc62f9c3qcc0ww54ri0a2drvsngqzmiv1";
+      }
+    else
+      pkgs.fetchurl {
+        url = "https://github.com/hiroppy/tmux-agent-sidebar/releases/download/v${agentSidebarVersion}/tmux-agent-sidebar-linux-x86_64";
+        sha256 = "0i73329lvlrp071ryzdn0jgx3dmxc7q9fxixikiwcx504yirar70";
+      };
+  tmuxAgentSidebar = pkgs.tmuxPlugins.mkTmuxPlugin {
+    pluginName = "tmux-agent-sidebar";
+    path = "tmux-agent-sidebar";
+    rtpFilePath = "tmux-agent-sidebar.tmux";
+    version = agentSidebarVersion;
+    src = pkgs.fetchFromGitHub {
+      owner = "hiroppy";
+      repo = "tmux-agent-sidebar";
+      rev = "v${agentSidebarVersion}";
+      sha256 = "1hka38mkhazrf33f9wdjba8ravcscrkm26fd6fvjavfnrf08nain";
+    };
+    nativeBuildInputs = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [ pkgs.darwin.sigtool ];
+    postInstall =
+      ''
+        install -Dm755 ${agentSidebarBinary} $out/share/tmux-plugins/tmux-agent-sidebar/bin/tmux-agent-sidebar
+      ''
+      # Apple Silicon refuses to run an unsigned binary; ad-hoc sign it like
+      # nixpkgs' own opencode package does for the same reason.
+      + lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
+        codesign --force --sign - $out/share/tmux-plugins/tmux-agent-sidebar/bin/tmux-agent-sidebar
+      '';
   };
   tmuxWeatherCached = pkgs.writeShellApplication {
     name = "tmux-weather-cached";
@@ -77,11 +114,18 @@ in
       pkgs.tmuxPlugins.resurrect
       pkgs.tmuxPlugins.cpu
       pkgs.tmuxPlugins.battery
+      pkgs.tmuxPlugins.extrakto
       tmuxPowerZoom
+      tmuxAgentSidebar
+      # continuum must load after resurrect.
+      pkgs.tmuxPlugins.continuum
     ];
 
     extraConfig = ''
       set-option -g status-position top
+      # tmux-continuum: auto-restore the last saved session on tmux start
+      # (tmux-resurrect already provides the save/restore commands).
+      set -g @continuum-restore 'on'
       set -g default-terminal "tmux-256color"
       set -s set-clipboard on
       set -g extended-keys on
@@ -141,4 +185,9 @@ in
       bind-key -T copy-mode-vi WheelDownPane send-keys -N1 -X scroll-down
     '';
   };
+
+  # Wires OpenCode into tmux-agent-sidebar without touching anything else
+  # that might live under ~/.config/opencode/plugins/.
+  xdg.configFile."opencode/plugins/tmux-agent-sidebar.js".source =
+    "${tmuxAgentSidebar}/share/tmux-plugins/tmux-agent-sidebar/.opencode/plugins/tmux-agent-sidebar.js";
 }

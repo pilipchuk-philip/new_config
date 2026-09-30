@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   uvCompletions = pkgs.runCommand "uv-zsh-completions" { } ''
@@ -36,7 +36,7 @@ in
       gc = "git branch --sort=committerdate | fzf --header 'Checkout Recent Branch' --preview 'git diff {0} --color=always' --pointer='=>' | xargs git checkout";
       fd = "fd --hidden --color always -i ";
     };
-    initContent = ''
+    initContent = lib.mkAfter ''
       fpath=("${config.xdg.configHome}/zsh/completions" $fpath)
       export POWERLEVEL9K_CONFIG_FILE=${config.xdg.configHome}/p10k.zsh
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
@@ -51,6 +51,12 @@ in
           command tmux "$@"
         fi
       }
+
+      # Login shells (macOS Terminal/Ghostty, and Ubuntu's own /usr/bin/vim)
+      # can re-add the system PATH entries after this file loads, shadowing
+      # nvim's vim/vi alias with /usr/bin/vim again. Re-assert the profile
+      # last, with mkAfter so it wins regardless of module merge order.
+      export PATH="${config.home.profileDirectory}/bin:$PATH"
     '';
     syntaxHighlighting.enable = true;
   };
