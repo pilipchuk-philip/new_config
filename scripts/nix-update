@@ -1,6 +1,10 @@
 #!/bin/sh
 set -eu
 
+# Standalone Nix installations may not enable these features globally.
+export NIX_CONFIG="${NIX_CONFIG:-}
+extra-experimental-features = nix-command flakes"
+
 dry_run=0
 if [ "${1:-}" = "--dry-run" ]; then
   dry_run=1
@@ -69,8 +73,7 @@ case "${apply_kind}" in
     run sudo darwin-rebuild switch --flake "${flake_dir}#${flake_attr}"
     ;;
   home-manager)
-    run env NIX_CONFIG="experimental-features = nix-command flakes" \
-      nix run "${flake_dir}#home-manager" -- switch --flake "${flake_dir}#${flake_attr}"
+    run nix run "${flake_dir}#home-manager" -- switch --flake "${flake_dir}#${flake_attr}"
     ;;
   *)
     echo "Unsupported apply kind: ${apply_kind}"
