@@ -76,6 +76,34 @@ cd ~/new_config
 NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager -- switch --flake .#ubuntu-desktop
 ```
 
+### Alt-сочетания для буфера обмена в Ubuntu
+
+`scripts/ubuntu-keyd.nix` задаёт глобальные переназначения через `keyd`:
+Alt+C → Ctrl+C, Alt+V → Ctrl+V, Alt+A → Ctrl+A, Alt+X → Ctrl+X.
+Они работают в Wayland и X11; остальные сочетания Alt сохраняются.
+
+Установить или обновить системную службу из корня репозитория:
+
+```bash
+nix --extra-experimental-features 'nix-command flakes' run path:.#ubuntu-keyd-setup
+```
+
+Команда запрашивает `sudo`, устанавливает конфиг `/etc/keyd/default.conf`,
+службу `/etc/systemd/system/keyd.service` и автозагрузку модуля `uinput`.
+Существующие файлы сохраняются с суффиксом `~`. Пакет берётся из закреплённого
+`nixpkgs`; GC root `/nix/var/nix/gcroots/ubuntu-keyd` защищает его от очистки.
+`path:.` позволяет запускать команду и до добавления нового Nix-файла в Git.
+Служба запускается сразу и при последующих загрузках Ubuntu.
+
+В терминале Alt+C действует как Ctrl+C (прерывает процесс), а не как
+Ctrl+Shift+C. Правый Alt (AltGr) сохраняет стандартное поведение.
+
+Отключить переназначение:
+
+```bash
+sudo systemctl disable --now keyd.service
+```
+
 ### Шрифты и чёткость текста в Ubuntu
 
 Профиль `ubuntu-desktop` устанавливает оригинальные SF Pro и SF Mono из
@@ -212,8 +240,56 @@ updated `flake.lock` in the working tree for inspection.
 
 ## Secrets
 
-SOPS integration is intentionally disabled until the repository has a real
-public age recipient. Never commit private age keys or decrypted secret files.
+Secrets are managed manually with SOPS and age; they are restored separately
+from `nix-apply`. The commands are installed through Home Manager on all targets.
+Automatic activation through sops-nix is not configured.
+
+Initialize once, choosing a passphrase at the age prompt:
+
+```bash
+nix-secrets init
+```
+
+This creates `.sops.yaml` with your public recipient and a passphrase-encrypted
+private key at `${XDG_CONFIG_HOME:-~/.config}/sops/age/keys.txt.age`.
+Back up that encrypted key separately: the password alone cannot recover secrets
+if the key is lost. Commit `.sops.yaml` and encrypted files, never private keys
+or decrypted files. On another machine, restore the encrypted key to the same
+location and use the repository's existing `.sops.yaml`; do not initialize again.
+
+Encrypt and decrypt individual files (including binary files):
+
+```bash
+nix-crypt "my file"                  # creates my file.enc.json
+nix-decript "my file.enc.json"       # creates my file.dec
+```
+
+Both commands prompt for the key's passphrase. Originals are preserved, output
+files have mode `0600`, and existing output files are never overwritten.
+The spelling `nix-decript` is intentional.
+
+Save selected files to `secrets/` and restore them explicitly:
+
+```bash
+nix-secrets save ssh-personal ~/.ssh/id_ed25519
+nix-secrets save ssh-personal-public ~/.ssh/id_ed25519.pub
+nix-secrets save hosts /etc/hosts
+
+nix-secrets restore ssh-personal ~/.ssh/id_ed25519
+nix-secrets restore ssh-personal-public ~/.ssh/id_ed25519.pub
+nix-secrets restore hosts /etc/hosts
+```
+
+Names use letters, digits, dots, underscores and hyphens. `save` creates
+`secrets/NAME.enc.json` and refuses to overwrite it. To save an updated version,
+use a new name or explicitly remove the old encrypted file first.
+`restore` asks before replacing existing files and keeps a private backup under
+`${XDG_STATE_HOME:-~/.local/state}/nix-secrets/backups/`. For `/etc/hosts`, it
+also shows a diff and uses `sudo` to install the complete file with mode `0644`;
+include the required localhost entries in the saved file. Other restored files
+have mode `0600`, and `~/.ssh` is set to `0700`. Use the literal `/etc/hosts`
+destination for the privileged operation. Temporary decrypted material is
+removed on exit; plaintext never becomes a Nix build input.
 
 ## Notes
 

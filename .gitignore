@@ -2,3 +2,6 @@
 *.dec
 secrets/*.local.yaml
 secrets/*.decrypted.yaml
+secrets/**/*.dec
+keys.txt
+keys.txt.age

@@ -108,10 +108,17 @@
         homeModule = ./home/darwin-work.nix;
       };
 
-      apps.${linuxSystem}.home-manager = {
-        type = "app";
-        program = "${home-manager.packages.${linuxSystem}.home-manager}/bin/home-manager";
-        meta.description = "Home Manager CLI from the locked flake input";
+      apps.${linuxSystem} = {
+        home-manager = {
+          type = "app";
+          program = "${home-manager.packages.${linuxSystem}.home-manager}/bin/home-manager";
+          meta.description = "Home Manager CLI from the locked flake input";
+        };
+        ubuntu-keyd-setup = {
+          type = "app";
+          program = nixpkgs.lib.getExe (import ./scripts/ubuntu-keyd.nix { inherit pkgs; });
+          meta.description = "Install Ubuntu's system-wide Alt clipboard shortcuts";
+        };
       };
 
       checks = {

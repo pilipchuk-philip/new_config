@@ -1,6 +1,9 @@
 { pkgs, ... }:
 
 let
+  # IPTV Simple also includes adaptive, FFmpeg Direct and RTMP input modules.
+  kodi = pkgs.kodi.withPackages (addons: [ addons.pvr-iptvsimple ]);
+
   # Use Apple's original downloads, pinned independently of Homebrew's latest casks.
   mkAppleFont =
     {
@@ -81,6 +84,8 @@ in
   home.homeDirectory = "/home/q";
 
   dconf.settings = {
+    "org/gnome/desktop/peripherals/mouse".natural-scroll = true;
+    "org/gnome/desktop/peripherals/touchpad".natural-scroll = true;
     "org/gnome/desktop/input-sources".xkb-options = [
       "grp_led:scroll"
       "ctrl:nocaps"
@@ -127,6 +132,7 @@ in
     pkgs.codex
     pkgs.claude-code
     pkgs.ghostty
+    kodi
     pkgs.nerd-fonts.jetbrains-mono
     pkgs.ollama
     pkgs.steam
@@ -139,6 +145,21 @@ in
     pkgs.tailscale
     pkgs.tailscale-systray
   ];
+
+  # Register directly in the user's menu, independently of GNOME's Nix environment.
+  xdg.dataFile."applications/kodi.desktop".text = ''
+    [Desktop Entry]
+    Version=1.0
+    Type=Application
+    Name=Kodi
+    GenericName=Media Center
+    Comment=IPTV and media player
+    Exec=${kodi}/bin/kodi
+    Icon=${kodi}/share/icons/hicolor/256x256/apps/kodi.png
+    Terminal=false
+    Categories=AudioVideo;Video;Player;TV;
+    StartupNotify=true
+  '';
 
   # Ghostty advertises D-Bus activation, but its package does not provide the
   # systemd user unit expected by GNOME. Override the launcher so GNOME runs

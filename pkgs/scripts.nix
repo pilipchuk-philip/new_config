@@ -14,10 +14,32 @@ let
     ];
     text = builtins.readFile ../scripts/nix-repo;
   };
+  secrets = pkgs.writeShellApplication {
+    name = "nix-secrets";
+    runtimeInputs = [
+      pkgs.age
+      pkgs.sops
+      pkgs.coreutils
+      pkgs.diffutils
+      repoResolver
+    ];
+    text = builtins.readFile ../scripts/nix-secrets;
+  };
 in
 [
   targetDetector
   repoResolver
+  secrets
+  (pkgs.writeShellApplication {
+    name = "nix-crypt";
+    runtimeInputs = [ secrets ];
+    text = builtins.readFile ../scripts/nix-crypt;
+  })
+  (pkgs.writeShellApplication {
+    name = "nix-decript";
+    runtimeInputs = [ secrets ];
+    text = builtins.readFile ../scripts/nix-decript;
+  })
   (pkgs.writeShellApplication {
     name = "nix-apply";
     runtimeInputs = [

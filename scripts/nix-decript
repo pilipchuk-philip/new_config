@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -ne 1 ]; then
+  echo 'Usage: nix-decript <file_name.enc.json>' >&2
+  exit 1
+fi
+case "$1" in
+  *.enc.json) output="${1%.enc.json}.dec" ;;
+  *) output="$1.dec" ;;
+esac
+exec nix-secrets decrypt "$1" "$output"
