@@ -29,4 +29,5 @@
   # Keep skill content separate while installing it globally for OpenCode.
   xdg.configFile."opencode/skills/nix/SKILL.md".source = ./skills/nix.md;
   xdg.configFile."opencode/skills/home-dev/SKILL.md".source = ./skills/home-dev.md;
+  xdg.configFile."opencode/skills/reliable-development/SKILL.md".source = ./skills/reliable-development.md;
 }

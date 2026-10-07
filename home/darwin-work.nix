@@ -5,7 +5,9 @@
 
   home.username = "ppy";
   home.homeDirectory = "/Users/ppy";
-  home.packages = [ pkgs.google-cloud-sdk ];
+  home.packages = [
+    (pkgs.google-cloud-sdk.withExtraComponents [ pkgs.google-cloud-sdk.components.cbt ])
+  ];
 
   programs.git.settings.user = {
     name = "pilipchuk-philip";
