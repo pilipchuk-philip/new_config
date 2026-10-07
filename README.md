@@ -76,6 +76,48 @@ cd ~/new_config
 NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager -- switch --flake .#ubuntu-desktop
 ```
 
+### Шрифты и чёткость текста в Ubuntu
+
+Профиль `ubuntu-desktop` устанавливает оригинальные SF Pro и SF Mono из
+архивов Apple с фиксированными SHA-256. SF Pro Text используется для интерфейса
+GNOME и GTK, SF Pro Display — для заголовков окон, SF Mono — для моноширинного
+текста и Ghostty. Лицензии Apple сохраняются в `share/doc` пакетов.
+
+Сглаживание задаётся в `home/ubuntu-desktop.nix`: `antialiasing = true`,
+`hinting = "none"`, `subpixelRendering = "none"`, а также соответствующими
+настройками GNOME. Это grayscale-сглаживание, приближенное к современному macOS;
+рендеринг текста Linux и macOS не будет полностью одинаковым.
+
+Применение из корня репозитория:
+
+```bash
+nix --extra-experimental-features 'nix-command flakes' run .#home-manager -- switch --flake .#ubuntu-desktop
+```
+
+После применения выйди из сеанса и войди снова, перезапусти Ghostty.
+Проверить выбранные шрифты можно командами:
+
+```bash
+fc-match sans-serif
+fc-match monospace
+gsettings get org.gnome.desktop.interface font-name
+```
+
+Для экрана открой **Настройки → Дисплеи** и сохрани родное разрешение монитора.
+При слишком мелком интерфейсе попробуй масштаб 125% (дробное масштабирование),
+сравнив чёткость с 100%. Для увеличения только текста без масштабирования окон
+можно использовать:
+
+```bash
+gsettings set org.gnome.desktop.interface text-scaling-factor 1.15
+# Вернуть обычный размер:
+gsettings reset org.gnome.desktop.interface text-scaling-factor
+```
+
+На мониторах 1440p масштаб 200% обычно слишком крупный. Чёткость Retina
+требует высокой физической плотности пикселей: настройка масштаба сама по себе
+её не увеличивает. Частота обновления влияет на плавность, а не на чёткость текста.
+
 ## Update And Validate
 
 Update inputs:

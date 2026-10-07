@@ -1,5 +1,51 @@
 { pkgs, ... }:
 
+let
+  # Use Apple's original downloads, pinned independently of Homebrew's latest casks.
+  mkAppleFont =
+    {
+      pname,
+      url,
+      hash,
+      installer,
+      payload,
+    }:
+    pkgs.stdenvNoCC.mkDerivation {
+      inherit pname;
+      version = "2026-10-06";
+      src = pkgs.fetchurl { inherit url hash; };
+      nativeBuildInputs = [
+        pkgs._7zz
+        pkgs.libarchive
+      ];
+      unpackPhase = ''
+        runHook preUnpack
+        7zz x -y "$src" -odmg
+        mkdir package fonts
+        bsdtar -xf "dmg/${installer}" -C package
+        bsdtar -xf "package/${payload}/Payload" -C fonts
+        runHook postUnpack
+      '';
+      installPhase = ''
+        runHook preInstall
+        mkdir -p "$out/share/fonts/opentype" "$out/share/fonts/truetype"
+        install -m644 fonts/Library/Fonts/*.otf "$out/share/fonts/opentype/"
+        for font in fonts/Library/Fonts/*.ttf; do
+          if [ -f "$font" ]; then
+            install -m644 "$font" "$out/share/fonts/truetype/"
+          fi
+        done
+        mkdir -p "$out/share/doc/${pname}"
+        cp -r package/Resources "$out/share/doc/${pname}/"
+        runHook postInstall
+      '';
+      meta = {
+        homepage = "https://developer.apple.com/fonts/";
+        license = pkgs.lib.licenses.unfree;
+        platforms = pkgs.lib.platforms.linux;
+      };
+    };
+in
 {
   imports = [ ../home.nix ];
 
@@ -17,16 +63,65 @@
     version = "595.91.07";
     sha256 = "sha256-yiPIjdJLB6GRZE4eEc+3vN11NzBXSa9A+YABiwleYxM=";
   };
-  fonts.fontconfig.enable = true;
+  fonts.fontconfig = {
+    enable = true;
+    defaultFonts = {
+      sansSerif = [ "SF Pro Text" ];
+      monospace = [
+        "SF Mono"
+        "JetBrainsMono Nerd Font"
+      ];
+    };
+    # Modern macOS uses grayscale antialiasing and preserves glyph outlines.
+    antialiasing = true;
+    hinting = "none";
+    subpixelRendering = "none";
+  };
   home.username = "q";
   home.homeDirectory = "/home/q";
 
-  dconf.settings."org/gnome/desktop/input-sources".xkb-options = [
-    "grp_led:scroll"
-    "ctrl:nocaps"
-  ];
+  dconf.settings = {
+    "org/gnome/desktop/input-sources".xkb-options = [
+      "grp_led:scroll"
+      "ctrl:nocaps"
+    ];
+    "org/gnome/desktop/interface" = {
+      font-name = "SF Pro Text 11";
+      document-font-name = "SF Pro Text 11";
+      monospace-font-name = "SF Mono 11";
+      font-antialiasing = "grayscale";
+      font-hinting = "none";
+    };
+    "org/gnome/desktop/wm/preferences".titlebar-font = "SF Pro Display Bold 11";
+  };
+
+  gtk = {
+    enable = true;
+    font = {
+      name = "SF Pro Text";
+      size = 11;
+    };
+  };
+
+  xdg.configFile."ghostty/config.ghostty".text = ''
+    font-family = SF Mono
+  '';
 
   home.packages = [
+    (mkAppleFont {
+      pname = "sf-pro";
+      url = "https://devimages-cdn.apple.com/design/resources/download/SF-Pro.dmg";
+      hash = "sha256-loqzuLH5LC2K9h6waA9cIiTE541ZuYa/AEUCp/wBKRg=";
+      installer = "SFProFonts.pkg";
+      payload = "SFProFontsPackage.pkg";
+    })
+    (mkAppleFont {
+      pname = "sf-mono";
+      url = "https://devimages-cdn.apple.com/design/resources/download/SF-Mono.dmg";
+      hash = "sha256-bUoLeOOqzQb5E/ZCzq0cfbSvNO1IhW1xcaLgtV2aeUU=";
+      installer = "SFMonoFonts/SF Mono Fonts.pkg";
+      payload = "SFMonoFonts.pkg";
+    })
     # pkgs._1password-cli
     # pkgs._1password-gui
     pkgs.codex
