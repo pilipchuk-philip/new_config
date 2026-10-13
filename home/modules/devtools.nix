@@ -72,7 +72,6 @@ in
         # LSP servers
         lua-language-server
         pyright
-        typescript-language-server
         bash-language-server
         vscode-langservers-extracted
         yaml-language-server
@@ -98,6 +97,15 @@ in
         ;
     })
     ++ [
+      (if pkgs.stdenv.hostPlatform.isDarwin then
+        pkgs.typescript-language-server.overrideAttrs (old: {
+          # nixpkgs 7fd4004: pnpm deps for 6.0.2 have an outdated hash on macOS.
+          pnpmDeps = old.pnpmDeps.overrideAttrs (_: {
+            outputHash = "sha256-PmyJb8090pEPc09Tbv8RgdvQpzpba2L8ve87+aVncQU=";
+          });
+        })
+      else
+        pkgs.typescript-language-server)
       pkgs.llvmPackages.clang-tools
       pkgs.valeStyles.proselint
     ]

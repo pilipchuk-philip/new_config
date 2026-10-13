@@ -21,7 +21,14 @@ in
     force = true;
     text = builtins.toJSON {
       "$schema" = "https://opencode.ai/config.json";
-      plugin = [ "opencode-usage-monitor@2.0.1" ];
+      plugin = [
+        "opencode-usage-monitor@2.0.1"
+        "@tarquinen/opencode-dcp@3.2.0"
+      ];
+      mcp.context7 = {
+        type = "remote";
+        url = "https://mcp.context7.com/mcp";
+      };
     };
   };
 
