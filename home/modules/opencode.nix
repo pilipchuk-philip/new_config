@@ -77,6 +77,7 @@ in
 
   # Keep skill content separate while installing it globally for OpenCode.
   xdg.configFile."opencode/skills/nix/SKILL.md".source = ./skills/nix.md;
+  xdg.configFile."opencode/skills/homelab-services/SKILL.md".source = ./skills/homelab-services.md;
   xdg.configFile."opencode/skills/home-dev/SKILL.md".source = ./skills/home-dev.md;
   xdg.configFile."opencode/skills/real-dev/SKILL.md".source = ./skills/real-dev.md;
   xdg.configFile."opencode/agents/reviewer.md".source = ./agents/reviewer.md;

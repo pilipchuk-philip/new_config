@@ -83,8 +83,8 @@ Defined in [`flake.nix`](./flake.nix):
 | Output                              | Command                                                   | Notes                                                                                               |
 | ----------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | `nixosConfigurations.nixos`         | `sudo nixos-rebuild switch --flake .#nixos`               | Full NixOS system + Home Manager module for user `q`                                                |
-| `darwinConfigurations.mac`          | `sudo darwin-rebuild switch --flake .#mac`                | nix-darwin, user `q`, personal machine                                                              |
-| `darwinConfigurations.mac-work`     | `sudo darwin-rebuild switch --flake .#mac-work`           | nix-darwin, user `ppy`, work machine                                                                |
+| `darwinConfigurations.mac`          | `sudo nix run nix-darwin#darwin-rebuild -- switch --flake .#mac`      | nix-darwin, user `q`, personal machine                                                              |
+| `darwinConfigurations.mac-work`     | `sudo nix run nix-darwin#darwin-rebuild -- switch --flake .#mac-work` | nix-darwin, user `ppy`, work machine                                                                |
 | `homeConfigurations.ubuntu-desktop` | `nix run home-manager -- switch --flake .#ubuntu-desktop` | Standalone Home Manager, no system module (non-NixOS Linux)                                         |
 | `apps.x86_64-linux.home-manager`    | `nix run .#home-manager`                                  | Exposes the locked Home Manager CLI                                                                 |
 | `checks`                            | `nix flake check --all-systems --no-build`                | Dummy derivations that force-evaluate every configuration's `toplevel`/`activationPackage`/`system` |

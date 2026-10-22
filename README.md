@@ -48,22 +48,22 @@ Bootstrap nix-darwin for the personal machine:
 sudo nix run nix-darwin#darwin-rebuild -- switch --flake .#mac
 ```
 
-Apply later changes:
+Apply later changes (the same command also works for the first activation):
 
 ```bash
-sudo darwin-rebuild switch --flake .#mac
+sudo nix run nix-darwin#darwin-rebuild -- switch --flake .#mac
 ```
 
 For the work profile:
 
 ```bash
-sudo darwin-rebuild switch --flake .#mac-work
+sudo nix run nix-darwin#darwin-rebuild -- switch --flake .#mac-work
 ```
 
 Absolute paths are also valid:
 
 ```bash
-sudo darwin-rebuild switch --flake /Users/q/new_config#mac
+sudo nix run nix-darwin#darwin-rebuild -- switch --flake /Users/q/new_config#mac
 ```
 
 ## Ubuntu Desktop
@@ -170,10 +170,10 @@ sudo nixos-rebuild switch --flake .#nixos
 NIX_CONFIG="experimental-features = nix-command flakes" nix run home-manager -- switch --flake .#ubuntu-desktop
 
 # macOS personal
-sudo darwin-rebuild switch --flake .#mac
+sudo nix run nix-darwin#darwin-rebuild -- switch --flake .#mac
 
 # macOS work
-sudo darwin-rebuild switch --flake .#mac-work
+sudo nix run nix-darwin#darwin-rebuild -- switch --flake .#mac-work
 ```
 
 ## Helper Scripts
@@ -195,8 +195,8 @@ current Git root, or `$HOME/new_config`, in that order.
 
 1. NixOS: `sudo nixos-rebuild switch --flake <repo>#nixos`
 2. Ubuntu or other non-NixOS Linux: Home Manager with `<repo>#ubuntu-desktop`
-3. macOS user `q`: `sudo darwin-rebuild switch --flake <repo>#mac`
-4. macOS user `ppy`: `sudo darwin-rebuild switch --flake <repo>#mac-work`
+3. macOS user `q`: `sudo nix run nix-darwin#darwin-rebuild -- switch --flake <repo>#mac`
+4. macOS user `ppy`: `sudo nix run nix-darwin#darwin-rebuild -- switch --flake <repo>#mac-work`
 
 Normal use:
 

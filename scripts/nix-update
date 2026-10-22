@@ -66,11 +66,7 @@ case "${apply_kind}" in
     run sudo nixos-rebuild switch --flake "${flake_dir}#${flake_attr}"
     ;;
   darwin)
-    if ! command -v darwin-rebuild >/dev/null 2>&1; then
-      echo "Missing command: darwin-rebuild"
-      exit 1
-    fi
-    run sudo darwin-rebuild switch --flake "${flake_dir}#${flake_attr}"
+    run sudo nix run nix-darwin#darwin-rebuild -- switch --flake "${flake_dir}#${flake_attr}"
     ;;
   home-manager)
     run nix run "${flake_dir}#home-manager" -- switch --flake "${flake_dir}#${flake_attr}"
