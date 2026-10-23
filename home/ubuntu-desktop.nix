@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 let
   # IPTV Simple also includes adaptive, FFmpeg Direct and RTMP input modules.
@@ -82,6 +82,19 @@ in
   };
   home.username = "q";
   home.homeDirectory = "/home/q";
+
+  sops = {
+    defaultSopsFile = ../secrets/ubuntu-desktop.yaml;
+    age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
+    secrets.LM_API_TOKEN = { };
+  };
+
+  # Read the decrypted secret at shell startup, keeping it out of the Nix store.
+  programs.zsh.envExtra = ''
+    if [[ -r "${config.sops.secrets.LM_API_TOKEN.path}" ]]; then
+      export LM_API_TOKEN="$(<"${config.sops.secrets.LM_API_TOKEN.path}")"
+    fi
+  '';
 
   dconf.settings = {
     "org/gnome/desktop/peripherals/mouse".natural-scroll = true;

@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 let
   mattPocockSkills = pkgs.fetchFromGitHub {
@@ -28,6 +28,28 @@ in
       mcp.context7 = {
         type = "remote";
         url = "https://mcp.context7.com/mcp";
+      };
+      provider.lmstudio = {
+        npm = "@ai-sdk/openai-compatible";
+        name = "LM Studio (local)";
+        options = {
+          baseURL = "http://127.0.0.1:1234/v1";
+          # Ubuntu provides this secret through sops-nix, including for GUI launches.
+          apiKey =
+            if config ? sops && config.sops.secrets ? LM_API_TOKEN then
+              "{file:${config.sops.secrets.LM_API_TOKEN.path}}"
+            else
+              "{env:LM_API_TOKEN}";
+        };
+        # IDs returned by LM Studio's /v1/models; embeddings are not chat models.
+        models = {
+          "openai/gpt-oss-20b".name = "GPT OSS 20B (local)";
+          "meta/muse-glimmer".name = "Muse Glimmer (local)";
+          "mistralai/ministral-3-14b-reasoning".name = "Ministral 3 14B Reasoning (local)";
+          "google/gemma-4-26b-a4b".name = "Gemma 4 26B A4B (local)";
+          "google/gemma-4-12b".name = "Gemma 4 12B (local)";
+          "google/gemma-4-e4b".name = "Gemma 4 E4B (local)";
+        };
       };
     };
   };

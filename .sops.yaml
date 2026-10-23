@@ -1,0 +1,3 @@
+creation_rules:
+  - path_regex: secrets/ubuntu-desktop\.yaml$
+    age: age1lnaxn4as0lqu4tlh5wwj6sgcq0rkyd56ceewslslju7txk7flu0qg89egf

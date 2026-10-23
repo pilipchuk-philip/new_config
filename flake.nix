@@ -10,6 +10,8 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     darwin.url = "github:LnL7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -55,7 +57,7 @@
         homeModule:
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          modules = homeImports homeModule;
+          modules = homeImports homeModule ++ [ inputs.sops-nix.homeManagerModules.sops ];
         };
       mkDarwin =
         {
@@ -118,6 +120,11 @@
           type = "app";
           program = nixpkgs.lib.getExe (import ./scripts/ubuntu-keyd.nix { inherit pkgs; });
           meta.description = "Install Ubuntu's system-wide Alt clipboard shortcuts";
+        };
+        ubuntu-grub-theme-setup = {
+          type = "app";
+          program = nixpkgs.lib.getExe (import ./scripts/ubuntu-grub-theme.nix { inherit pkgs; });
+          meta.description = "Install the Matrices Window GRUB theme on Ubuntu";
         };
       };
 
