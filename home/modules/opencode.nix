@@ -43,6 +43,12 @@ in
         };
         # IDs returned by LM Studio's /v1/models; embeddings are not chat models.
         models = {
+          "deepseek/deepseek-r1-0528-qwen3-8b".name = "DeepSeek R1 0528 Qwen3 8B (local)";
+          "qwen/qwen3-4b-2507".name = "Qwen3 4B 2507 (local)";
+          "nvidia/nemotron-3-nano-4b".name = "Nemotron 3 Nano 4B (local)";
+          "qwen/qwen3-4b".name = "Qwen3 4B (local)";
+          "qwen/qwen3-4b-thinking-2507".name = "Qwen3 4B Thinking 2507 (local)";
+          "qwen/qwen3-vl-4b".name = "Qwen3 VL 4B (local)";
           "openai/gpt-oss-20b".name = "GPT OSS 20B (local)";
           "meta/muse-glimmer".name = "Muse Glimmer (local)";
           "mistralai/ministral-3-14b-reasoning".name = "Ministral 3 14B Reasoning (local)";
