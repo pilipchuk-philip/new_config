@@ -189,6 +189,12 @@ in
 
   # Wires OpenCode into tmux-agent-sidebar without touching anything else
   # that might live under ~/.config/opencode/plugins/.
-  xdg.configFile."opencode/plugins/tmux-agent-sidebar.js".source =
-    "${tmuxAgentSidebar}/share/tmux-plugins/tmux-agent-sidebar/.opencode/plugins/tmux-agent-sidebar.js";
+  # The server has no terminal identity; only the TUI may write pane state.
+  xdg.configFile."opencode/plugins/tmux-agent-sidebar/index.js".text = ''
+    export default { id: "tmux-agent-sidebar", setup() {} };
+  '';
+  xdg.configFile."opencode/plugins/tmux-agent-sidebar/tui.js".source =
+    pkgs.replaceVars ./home/modules/opencode/tmux-agent-sidebar.js {
+      sidebarBinary = "${tmuxAgentSidebar}/share/tmux-plugins/tmux-agent-sidebar/bin/tmux-agent-sidebar";
+    };
 }

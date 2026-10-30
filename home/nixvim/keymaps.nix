@@ -4,6 +4,19 @@
   programs.nixvim.extraConfigLua = lib.mkAfter ''
     local keymap = vim.keymap.set
 
+    keymap({ "n", "x" }, "<leader>oa", function()
+      require("opencode").ask("@this: ")
+    end, { desc = "Ask OpenCode" })
+    keymap({ "n", "x" }, "<leader>os", function()
+      require("opencode").select()
+    end, { desc = "Select OpenCode action" })
+    keymap({ "n", "x" }, "<leader>oo", function()
+      return require("opencode").operator("@this")
+    end, { desc = "Send range to OpenCode", expr = true })
+    keymap("n", "<leader>ol", function()
+      return require("opencode").operator("@this") .. "_"
+    end, { desc = "Send line to OpenCode", expr = true })
+
     function vim.getVisualSelection()
       vim.cmd('noau normal! "vy"')
       local text = vim.fn.getreg("v")

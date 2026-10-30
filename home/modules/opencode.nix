@@ -1,6 +1,7 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
+  usageMonitor = "opencode-usage-monitor@latest";
   mattPocockSkills = pkgs.fetchFromGitHub {
     owner = "mattpocock";
     repo = "skills";
@@ -15,14 +16,14 @@ in
   xdg.configFile."opencode/skills/grilling".source =
     "${mattPocockSkills}/skills/productivity/grilling";
 
-  # The OpenCode installer registers this pinned plugin in both server and TUI configs.
+  # Follow npm's latest tag; activation refreshes already cached plugin packages.
   # OpenCode's installer may have already created these files before Home Manager takes ownership.
   xdg.configFile."opencode/opencode.jsonc" = {
     force = true;
     text = builtins.toJSON {
       "$schema" = "https://opencode.ai/config.json";
-      plugin = [
-        "opencode-usage-monitor@2.0.1"
+      plugins = [
+        usageMonitor
         "@tarquinen/opencode-dcp@3.2.0"
       ];
       mcp.context7 = {
@@ -60,12 +61,26 @@ in
     };
   };
 
-  xdg.configFile."opencode/tui.json" = {
+  xdg.configFile."opencode/cli.json" = {
     force = true;
     text = builtins.toJSON {
-      plugin = [ "opencode-usage-monitor@2.0.1" ];
+      "$schema" = "https://opencode.ai/v2/cli.json";
+      plugins = [ usageMonitor ];
     };
   };
+
+  # Unpinned plugins are checked, but not upgraded, on OpenCode startup.
+  # Bootstrap the cache first: update cannot check a target that is not installed.
+  # Both configs already contain the target, so add does not rewrite their links.
+  # Run after config links are installed; respect Home Manager's dry-run mode.
+  home.activation.updateOpencodeUsageMonitor = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    if run ${lib.getExe pkgs.opencode} plugin add ${lib.escapeShellArg usageMonitor} &&
+       run ${lib.getExe pkgs.opencode} plugin update ${lib.escapeShellArg usageMonitor}; then
+      :
+    else
+      echo "Warning: opencode-usage-monitor install/update failed; retry with: opencode plugin add ${usageMonitor} && opencode plugin update ${usageMonitor}" >&2
+    fi
+  '';
 
   xdg.configFile."opencode/usage-monitor.json" = {
     force = true;

@@ -1,6 +1,17 @@
 { pkgs, ... }:
 
 let
+  # nixpkgs currently ships the V1-only release; main supports OpenCode V2.
+  opencodeNvim = pkgs.vimUtils.buildVimPlugin {
+    pname = "opencode.nvim";
+    version = "2026-10-30";
+    src = pkgs.fetchFromGitHub {
+      owner = "nickjvandyke";
+      repo = "opencode.nvim";
+      rev = "4851ae503585dc5142ad66a98e8952a74e1f7b3a";
+      sha256 = "1xzw5x1w6kl825dc7h6x96mx40wwpjsb5ca1ay1a8jrzcj2gq6a2";
+    };
+  };
   formatOnSave = pkgs.vimUtils.buildVimPlugin {
     pname = "format-on-save.nvim";
     version = "local";
@@ -70,6 +81,8 @@ in
   nixpkgs.config.allowUnfree = true;
 
   programs.nixvim = {
+    # opencode.nvim uses curl for the local OpenCode service API.
+    extraPackages = [ pkgs.curl ];
     extraPlugins =
       (builtins.attrValues {
         inherit (pkgs.vimPlugins)
@@ -122,6 +135,7 @@ in
           ;
       })
       ++ [
+        opencodeNvim
         formatOnSave
         nvimLint
         treesitterWithParsers

@@ -30,7 +30,6 @@
   # Bootloader
   boot.loader.timeout = 5;
   boot.consoleLogLevel = 0;
-  boot.initrd.verbose = false;
   boot.plymouth.enable = true;
   boot.plymouth.theme = "spinner";
   boot.loader.systemd-boot.enable = true;
