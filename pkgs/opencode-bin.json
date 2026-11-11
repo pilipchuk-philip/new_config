@@ -1,0 +1,13 @@
+{
+  "version": "2.3.0",
+  "platforms": {
+    "aarch64-darwin": {
+      "url": "https://github.com/anomalyco/opencode/releases/download/v2.3.0/opencode-darwin-arm64.zip",
+      "hash": "sha256-eQffKxJyCoQPu0nFuXi5uCkltr91R5pf0havqJMrZwI="
+    },
+    "x86_64-linux": {
+      "url": "https://github.com/anomalyco/opencode/releases/download/v2.3.0/opencode-linux-x64-baseline.tar.gz",
+      "hash": "sha256-/A+BUirO6rrEdpPYg4nvorxRfOdMLDj9aWeBn8xuTTs="
+    }
+  }
+}

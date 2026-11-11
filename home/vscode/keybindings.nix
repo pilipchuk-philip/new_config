@@ -374,7 +374,7 @@ in
     mutableExtensionsDir = false;
 
     profiles.default = {
-      keybindings = if pkgs.stdenv.isDarwin then macKeybindings else linuxKeybindings;
+      keybindings = if pkgs.stdenv.hostPlatform.isDarwin then macKeybindings else linuxKeybindings;
     };
   };
 }

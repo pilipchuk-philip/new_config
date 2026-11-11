@@ -1,6 +1,12 @@
 { ... }:
 
 {
+  nixpkgs.overlays = [
+    (final: _: {
+      opencode = import ./pkgs/opencode-bin.nix { pkgs = final; };
+    })
+  ];
+
   imports = [
     ./home/modules/shell.nix
     ./home/modules/devtools.nix

@@ -49,6 +49,10 @@ echo "#   Attr: ${flake_attr}"
 cd "${flake_dir}"
 run nix flake update
 
+# Refresh official binary versions and hashes for every configured platform,
+# before validation/activation; never resolve a mutable "latest" URL in a build.
+run python3 "${flake_dir}/scripts/update-opencode-bin.py"
+
 if [ "$dry_run" -eq 1 ]; then
   run nix flake check --all-systems --no-build --no-write-lock-file
 else
@@ -63,13 +67,13 @@ case "${apply_kind}" in
       echo "Missing command: nixos-rebuild"
       exit 1
     fi
-    run sudo nixos-rebuild switch --flake "${flake_dir}#${flake_attr}"
+    run sudo nixos-rebuild switch --print-build-logs --flake "${flake_dir}#${flake_attr}"
     ;;
   darwin)
-    run sudo nix run nix-darwin#darwin-rebuild -- switch --flake "${flake_dir}#${flake_attr}"
+    run sudo nix run nix-darwin#darwin-rebuild -- switch --print-build-logs --flake "${flake_dir}#${flake_attr}"
     ;;
   home-manager)
-    run nix run "${flake_dir}#home-manager" -- switch --flake "${flake_dir}#${flake_attr}"
+    run nix run "${flake_dir}#home-manager" -- switch --print-build-logs --flake "${flake_dir}#${flake_attr}"
     ;;
   *)
     echo "Unsupported apply kind: ${apply_kind}"

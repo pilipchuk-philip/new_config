@@ -31,6 +31,13 @@ in
   repoResolver
   secrets
   (pkgs.writeShellApplication {
+    name = "nix-fix-permissions";
+    runtimeInputs = [ pkgs.python3 ];
+    text = ''
+      exec python3 ${../scripts/nix-fix-permissions} "$@"
+    '';
+  })
+  (pkgs.writeShellApplication {
     name = "nix-crypt";
     runtimeInputs = [ secrets ];
     text = builtins.readFile ../scripts/nix-crypt;
@@ -115,6 +122,7 @@ in
     runtimeInputs = [
       pkgs.nix
       pkgs.coreutils
+      pkgs.python3
       targetDetector
       repoResolver
     ];

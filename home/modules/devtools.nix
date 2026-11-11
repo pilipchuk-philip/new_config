@@ -7,6 +7,41 @@
 
 let
   localScripts = import ../../pkgs/scripts.nix { inherit pkgs; };
+  # Use the upstream self-contained macOS release instead of bootstrapping .NET.
+  # Version and hash are pinned together; Linux keeps the nixpkgs package.
+  marksman =
+    if pkgs.stdenv.hostPlatform.isDarwin then
+      pkgs.stdenvNoCC.mkDerivation {
+        pname = "marksman-bin";
+        version = "2026-02-08";
+        src = pkgs.fetchurl {
+          url = "https://github.com/artempyanykh/marksman/releases/download/2026-02-08/marksman-macos";
+          hash = "sha256-aoAcF7WsDbppeHxSgrOzvUFuZsliU/rgmNMRxrvRgzs=";
+        };
+        dontUnpack = true;
+        # Preserve the upstream Mach-O binary and its signature.
+        dontFixup = true;
+        installPhase = ''
+          runHook preInstall
+          install -Dm755 "$src" "$out/bin/marksman"
+          runHook postInstall
+        '';
+        doInstallCheck = true;
+        installCheckPhase = ''
+          runHook preInstallCheck
+          "$out/bin/marksman" --version
+          runHook postInstallCheck
+        '';
+        meta = {
+          description = "Markdown language server (upstream macOS binary)";
+          homepage = "https://github.com/artempyanykh/marksman";
+          license = lib.licenses.mit;
+          platforms = lib.platforms.darwin;
+          mainProgram = "marksman";
+        };
+      }
+    else
+      pkgs.marksman;
   catppuccinDelta = pkgs.fetchurl {
     url = "https://raw.githubusercontent.com/catppuccin/delta/main/catppuccin.gitconfig";
     sha256 = "0mdlccyzjzlidiwilbd1fi233v5bmfi1cldj32vnfdqydgd0ln7h";
@@ -16,13 +51,15 @@ in
   programs.direnv = {
     enable = true;
     enableZshIntegration = true;
-    package =
-      if pkgs.stdenv.isDarwin then
-        pkgs.direnv.overrideAttrs (_: {
-          doCheck = false;
-        })
-      else
-        pkgs.direnv;
+    package = pkgs.direnv;
+    # Keep the previous workaround for rollback; use the binary cache by default.
+    # package =
+    #   if pkgs.stdenv.hostPlatform.isDarwin then
+    #     pkgs.direnv.overrideAttrs (_: {
+    #       doCheck = false;
+    #     })
+    #   else
+    #     pkgs.direnv;
   };
 
   programs.git = {
@@ -46,7 +83,7 @@ in
   };
 
   home.packages =
-    lib.optionals pkgs.stdenv.isLinux [
+    lib.optionals pkgs.stdenv.hostPlatform.isLinux [
       pkgs.cifs-utils
     ]
     ++ (builtins.attrValues {
@@ -78,7 +115,6 @@ in
         dockerfile-language-server
         nil
         sqls
-        marksman
 
         # format-on-save tools
         nixfmt
@@ -93,19 +129,13 @@ in
         mermaid-cli
         gh
         lynx
+        nchat
         opencode
         ;
     })
     ++ [
-      (if pkgs.stdenv.hostPlatform.isDarwin then
-        pkgs.typescript-language-server.overrideAttrs (old: {
-          # nixpkgs 7fd4004: pnpm deps for 6.0.2 have an outdated hash on macOS.
-          pnpmDeps = old.pnpmDeps.overrideAttrs (_: {
-            outputHash = "sha256-PmyJb8090pEPc09Tbv8RgdvQpzpba2L8ve87+aVncQU=";
-          });
-        })
-      else
-        pkgs.typescript-language-server)
+      marksman
+      pkgs.typescript-language-server
       pkgs.llvmPackages.clang-tools
       pkgs.valeStyles.proselint
     ]

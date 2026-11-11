@@ -238,6 +238,49 @@ nix-rollback 42
 `nix flake check --all-systems --no-build` succeeds. A failed check leaves the
 updated `flake.lock` in the working tree for inspection.
 
+OpenCode uses official prebuilt binaries on macOS (Apple Silicon) and Linux
+(x86_64 baseline, including older CPUs). `nix-update` follows the official V2
+stable channel and refreshes versioned URLs and SHA-256 hashes in
+`pkgs/opencode-bin.json` before validation. Keep this file alongside `flake.lock`;
+plain `nix flake update` alone does not update OpenCode. Builds and rollbacks use
+the pinned binaries, never a mutable `latest` download URL. An update failure
+stops before activation.
+
+### HOME ownership warnings
+
+Run `nix-fix-permissions` without arguments once to install
+`Defaults always_set_home` in `/etc/sudoers.d/99-nix-fix-permissions`
+(or `/private/etc/sudoers.d` on macOS). It requests sudo itself when needed.
+This affects all subsequent sudo commands and all users: HOME is taken from
+the target user's passwd record, including `sudo -u`.
+
+This handles Nix's `warning: $HOME (...) is not owned by you` caused by an
+inherited HOME. It does not change ownership or permissions of home directories,
+build, or activate anything. The main sudoers file is not changed; its standard
+sudoers.d include must already exist. The new rule and complete configuration
+are checked with visudo; failed validation removes the new rule. Existing
+unknown files are never overwritten, and repeat runs are safe. This is a local
+machine setting, not a declarative Nix module; removing the drop-in undoes it.
+The known nix-darwin include may be a root-owned, read-only `0444` Nix store
+file rather than `0440`. Only that exact mode mismatch is accepted after
+verifying its store target; full syntax and ownership validation still runs.
+Nix store permissions are never modified.
+
+```bash
+nix-fix-permissions
+```
+
+Before the first activation, run the script directly:
+
+```bash
+python3 scripts/nix-fix-permissions
+```
+
+Add `scripts/nix-fix-permissions` to Git's index before building a Git-backed
+flake, since untracked files are excluded. The old `nix-fix` is removed on the
+next Home Manager activation. The separate version-scoped Tectonic AWS-LC fix
+is retained.
+
 ## Secrets
 
 Secrets are managed manually with SOPS and age; they are restored separately

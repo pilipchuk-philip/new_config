@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+"""Install a validated sudoers drop-in so sudo always sets the target HOME."""
+import argparse
+import os
+from pathlib import Path
+import re
+import shlex
+import shutil
+import stat
+import subprocess
+import sys
+import tempfile
+
+
+RULE = "# Managed by nix-fix-permissions: use the target user's HOME.\nDefaults always_set_home\n"
+SUDOERS = Path("/etc/sudoers")
+
+
+def included_directory(text):
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith(("@includedir ", "#includedir ", "@includedir\t", "#includedir\t")):
+            parts = shlex.split(stripped, comments=False)
+            if len(parts) == 2 and parts[1] in ("/etc/sudoers.d", "/private/etc/sudoers.d"):
+                return Path(parts[1])
+    raise RuntimeError("В sudoers не подключён стандартный sudoers.d; основной файл автоматически не изменён")
+
+
+def readonly_nix_include(path):
+    path = Path(path)
+    if not path.is_symlink():
+        return False
+    resolved = path.resolve(strict=True)
+    if not resolved.is_relative_to("/nix/store"):
+        return False
+    info = resolved.stat()
+    return stat.S_ISREG(info.st_mode) and info.st_uid == 0 and stat.S_IMODE(info.st_mode) == 0o444
+
+
+def nix_darwin_mode_only(result):
+    # Only tolerate the known immutable nix-darwin include, never arbitrary
+    # permissions/ownership errors or syntax failures elsewhere in sudoers.
+    found = False
+    for line in (result.stdout + "\n" + result.stderr).splitlines():
+        if not line.strip() or line.endswith(": parsed OK"):
+            continue
+        match = re.fullmatch(
+            r"(/(?:private/)?etc/sudoers\.d/10-nix-darwin-extra-config): "
+            r"bad permissions, should be mode 0440", line
+        )
+        if match is None or not readonly_nix_include(match[1]):
+            return False
+        found = True
+    return found
+
+
+def validate(visudo, *arguments, stage="проверка sudoers"):
+    result = subprocess.run([visudo, "-c", *arguments], capture_output=True, text=True)
+    if result.returncode and not arguments and nix_darwin_mode_only(result):
+        # Explicit -f skips exact-mode enforcement; -O retains owner checks.
+        # The exception above has already verified the sole mode mismatch.
+        result = subprocess.run(
+            [visudo, "-c", "-O", "-f", str(SUDOERS)], capture_output=True, text=True
+        )
+    if result.returncode:
+        details = "\n".join(part.strip() for part in (result.stdout, result.stderr) if part.strip())
+        raise RuntimeError(
+            f"{stage}: visudo завершился с кодом {result.returncode}.\n"
+            f"{details or 'visudo не вывел причину ошибки.'}\n"
+            "Настройка не установлена; существующие файлы sudoers не изменены."
+        )
+
+
+def install(sudoers, visudo):
+    validate(visudo, stage="Проверка существующей конфигурации (до изменений)")
+    directory = included_directory(sudoers.read_text())
+    directory.mkdir(mode=0o755, exist_ok=True)
+    info = directory.lstat()
+    if directory.is_symlink() or not directory.is_dir() or info.st_uid != 0 or info.st_mode & 0o022:
+        raise RuntimeError("Небезопасные права sudoers.d; изменения отменены")
+    destination = directory / "99-nix-fix-permissions"
+    if destination.exists() or destination.is_symlink():
+        info = destination.lstat()
+        if (destination.is_symlink() or not destination.is_file() or info.st_uid != 0
+                or info.st_mode & 0o022 or destination.read_text() != RULE):
+            raise RuntimeError(f"Неизвестный файл {destination}; он не будет перезаписан")
+        print("Уже настроено: sudo использует HOME целевого пользователя.")
+        return
+    fd, name = tempfile.mkstemp(prefix=".nix-fix-permissions-", dir=directory)
+    temporary = Path(name)
+    try:
+        with os.fdopen(fd, "w") as stream:
+            stream.write(RULE)
+            os.fchmod(stream.fileno(), 0o440)
+        validate(visudo, "-f", str(temporary), stage="Проверка нового правила")
+        # Exclusive publication: never overwrite an existing or concurrent file.
+        os.link(temporary, destination)
+        try:
+            validate(visudo, stage="Проверка конфигурации после добавления правила")
+        except Exception:
+            destination.unlink()
+            raise
+    finally:
+        temporary.unlink(missing_ok=True)
+    print(f"Настроено: {destination}. Новые вызовы sudo используют HOME целевого пользователя.")
+    print("Права домашних каталогов не изменены. Сборка и активация не запускались.")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Один раз настроить правильный HOME для всех sudo-пользователей; без аргументов."
+    )
+    parser.parse_args()
+    if os.geteuid() != 0:
+        sudo = next((p for p in ("/run/wrappers/bin/sudo", "/usr/bin/sudo") if Path(p).is_file()), None)
+        if sudo is None:
+            raise RuntimeError("sudo не найден; запустите команду от root")
+        print("Настраиваю HOME для всех sudo-команд. Может потребоваться пароль sudo.", flush=True)
+        os.execv(sudo, [sudo, "-H", "--", sys.executable, str(Path(__file__).resolve())])
+        return
+    visudo = shutil.which("visudo", path="/usr/sbin:/usr/bin:/run/current-system/sw/bin")
+    if visudo is None:
+        raise RuntimeError("visudo не найден; изменений нет")
+    install(SUDOERS, visudo)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (OSError, KeyError, RuntimeError) as error:
+        print(f"nix-fix-permissions: {error}", file=sys.stderr)
+        sys.exit(1)
