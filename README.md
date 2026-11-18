@@ -281,6 +281,35 @@ flake, since untracked files are excluded. The old `nix-fix` is removed on the
 next Home Manager activation. The separate version-scoped Tectonic AWS-LC fix
 is retained.
 
+### macOS Nix daemon socket recovery
+
+If Nix reports `cannot connect to socket ... Connection refused`, run:
+
+```bash
+nix-fix-darwin-socket
+```
+
+Before the first activation (or while the daemon is unavailable), run directly:
+
+```bash
+python3 scripts/nix-fix-darwin-socket
+```
+
+The command requests sudo with the correct HOME, enables
+`org.nixos.nix-daemon` persistently in launchd, bootstraps the existing
+`/Library/LaunchDaemons/org.nixos.nix-daemon.plist` if unloaded, and restarts
+an unresponsive daemon. A healthy loaded daemon is not restarted. Success
+requires a Nix protocol connection to the explicit standard socket.
+The plist must be root-owned, not group/world-writable, have the expected
+label, and configure startup with KeepAlive or RunAtLoad.
+
+It never deletes the socket, changes permissions, rewrites the plist, builds,
+or activates a configuration. It is installed through Home Manager on macOS
+only. Add the new script to Git's index before building a Git-backed flake.
+If the problem returns after reboot even with the service enabled, investigate
+launchd/Nix logs; this recovery command does not diagnose every startup failure.
+The separate HOME warning is handled by `nix-fix-permissions`, not this command.
+
 ## Secrets
 
 Secrets are managed manually with SOPS and age; they are restored separately

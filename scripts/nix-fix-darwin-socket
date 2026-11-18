@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+"""Restore the standard macOS Nix daemon without rebuilding or deleting sockets."""
+import argparse
+import os
+from pathlib import Path
+import plistlib
+import shutil
+import stat
+import subprocess
+import sys
+import time
+
+
+LABEL = "org.nixos.nix-daemon"
+SERVICE = f"system/{LABEL}"
+PLIST = Path(f"/Library/LaunchDaemons/{LABEL}.plist")
+LAUNCHCTL = "/bin/launchctl"
+STORE = "unix:///nix/var/nix/daemon-socket/socket"
+
+
+def run(arguments):
+    return subprocess.run(arguments, capture_output=True, text=True, timeout=15)
+
+
+def checked(arguments):
+    result = run(arguments)
+    if result.returncode:
+        details = "\n".join(s.strip() for s in (result.stdout, result.stderr) if s.strip())
+        raise RuntimeError(f"{' '.join(arguments)}: код {result.returncode}\n{details}")
+    return result
+
+
+def validate_plist(path):
+    # launchd executes this file as root; never load a user-writable definition.
+    info = path.stat()
+    if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or info.st_mode & 0o022:
+        raise RuntimeError(f"Небезопасный владелец или права {path}; изменений нет")
+    with path.open("rb") as stream:
+        config = plistlib.load(stream)
+    if config.get("Label") != LABEL:
+        raise RuntimeError(f"В {path} неожиданный Label; изменений нет")
+    if not config.get("KeepAlive") and not config.get("RunAtLoad"):
+        raise RuntimeError(f"В {path} нет KeepAlive/RunAtLoad; исправьте автозапуск через nix-darwin")
+
+
+def ping(nix):
+    # Explicit socket URL prevents a local-store fallback or environment override.
+    return run([nix, "--extra-experimental-features", "nix-command",
+                "store", "ping", "--store", STORE])
+
+
+def repair(nix):
+    validate_plist(PLIST)
+    checked([LAUNCHCTL, "enable", SERVICE])
+    loaded = run([LAUNCHCTL, "print", SERVICE]).returncode == 0
+    if loaded and ping(nix).returncode == 0:
+        print("Nix daemon уже доступен; автозапуск включён.")
+        return
+    if not loaded:
+        checked([LAUNCHCTL, "bootstrap", "system", str(PLIST)])
+    checked([LAUNCHCTL, "kickstart", "-k", SERVICE])
+    for attempt in range(10):
+        result = ping(nix)
+        if result.returncode == 0:
+            print("Nix daemon доступен через стандартный сокет; автозапуск включён.")
+            print("Теперь можно запустить nix-apply. Сборка и активация не запускались.")
+            return
+        if attempt < 9:
+            time.sleep(1)
+    state = run([LAUNCHCTL, "print", SERVICE])
+    raise RuntimeError(
+        "Служба включена, но Nix daemon не отвечает.\n"
+        f"{result.stdout}\n{result.stderr}\n{state.stdout}\n{state.stderr}\n"
+        "Проверьте журнал launchd/Nix; сокет, plist и права не изменялись."
+    )
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Восстановить стандартный Nix daemon и его автозапуск на macOS; без аргументов."
+    )
+    parser.parse_args()
+    if sys.platform != "darwin":
+        raise RuntimeError("Эта команда предназначена только для macOS; изменений нет")
+    if os.geteuid() != 0:
+        sudo = "/usr/bin/sudo"
+        print("Восстанавливаю Nix daemon. Может потребоваться пароль sudo.", flush=True)
+        os.execv(sudo, [sudo, "-H", "--", sys.executable, str(Path(__file__).resolve())])
+        return
+    nix = next((str(p) for p in (
+        Path("/nix/var/nix/profiles/default/bin/nix"),
+        Path("/run/current-system/sw/bin/nix"),
+    ) if p.is_file() and os.access(p, os.X_OK)), None) or shutil.which("nix")
+    if nix is None:
+        raise RuntimeError("nix не найден; изменений нет")
+    repair(nix)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (OSError, ValueError, plistlib.InvalidFileException,
+            RuntimeError, subprocess.SubprocessError) as error:
+        print(f"nix-fix-darwin-socket: {error}", file=sys.stderr)
+        sys.exit(1)

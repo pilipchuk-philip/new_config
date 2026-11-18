@@ -129,3 +129,12 @@ in
     text = builtins.readFile ../scripts/nix-update;
   })
 ]
+++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
+  (pkgs.writeShellApplication {
+    name = "nix-fix-darwin-socket";
+    runtimeInputs = [ pkgs.python3 ];
+    text = ''
+      exec python3 ${../scripts/nix-fix-darwin-socket} "$@"
+    '';
+  })
+]
